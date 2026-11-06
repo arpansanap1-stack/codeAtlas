@@ -4,6 +4,7 @@ import {
   CodebaseHealthResponse,
   DebugResponse,
   FileContentResponse,
+  FileGitIntelligenceResponse,
   GeminiKeyResponse,
   GeminiSettingsResponse,
   GraphData,
@@ -180,6 +181,21 @@ export async function getCodebaseHealth(
   }
   return res.json();
 }
+
+export async function getFileGitHistory(
+  repoId: string,
+  filePath: string
+): Promise<FileGitIntelligenceResponse> {
+  const params = new URLSearchParams({ file_path: filePath });
+  const res = await fetch(`${API_BASE}/api/repos/${repoId}/git-history?${params}`);
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({ detail: "Failed to load git history" }));
+    throw new Error(errorData.detail || "Failed to evaluate git history intelligence");
+  }
+  return res.json();
+}
+
 
 
 

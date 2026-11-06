@@ -12,6 +12,9 @@ import {
   RotateCcw,
   Square,
   MessageSquare,
+  X,
+  Layers,
+  Plus,
 } from "lucide-react";
 
 interface Message {
@@ -24,6 +27,11 @@ interface ChatPanelProps {
   repoId: string;
   repoName: string;
   onSelectCitation: (filePath: string, startLine: number, endLine: number) => void;
+  selectedFiles?: string[];
+  onRemoveSelectedFile?: (filePath: string) => void;
+  onClearSelectedFiles?: () => void;
+  availableFiles?: string[];
+  onAddSelectedFile?: (filePath: string) => void;
 }
 
 const CITATION_REGEX = /\[([a-zA-Z0-9_\-\.\/]+):(\d+)-(\d+)\]/g;
@@ -72,7 +80,16 @@ function renderWithCitations(
   return parts;
 }
 
-export function ChatPanel({ repoId, repoName, onSelectCitation }: ChatPanelProps) {
+export function ChatPanel({
+  repoId,
+  repoName,
+  onSelectCitation,
+  selectedFiles = [],
+  onRemoveSelectedFile,
+  onClearSelectedFiles,
+  availableFiles = [],
+  onAddSelectedFile,
+}: ChatPanelProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "assistant",
@@ -109,7 +126,10 @@ export function ChatPanel({ repoId, repoName, onSelectCitation }: ChatPanelProps
       const response = await fetch(`${API_BASE}/api/repos/${repoId}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: question }),
+        body: JSON.stringify({
+          message: question,
+          selected_files: selectedFiles.length > 0 ? selectedFiles : undefined,
+        }),
         signal: abortController.signal,
       });
 
@@ -330,8 +350,67 @@ export function ChatPanel({ repoId, repoName, onSelectCitation }: ChatPanelProps
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Targeted Selected Context Banner */}
+      {selectedFiles.length > 0 && (
+        <div className="px-3 py-2 border-t border-sky-500/30 bg-sky-950/20 text-xs font-mono">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="text-[11px] font-semibold text-sky-400 flex items-center gap-1">
+              <Layers className="w-3.5 h-3.5" />
+              <span>Targeted Context ({selectedFiles.length} file{selectedFiles.length > 1 ? "s" : ""})</span>
+            </span>
+            {onClearSelectedFiles && (
+              <button
+                onClick={onClearSelectedFiles}
+                className="text-[10px] text-zinc-400 hover:text-rose-400 transition-colors"
+                title="Clear all pinned files"
+              >
+                Clear Context
+              </button>
+            )}
+          </div>
+
+          <div className="flex flex-wrap gap-1.5 mb-2">
+            {selectedFiles.map((file, idx) => (
+              <span
+                key={idx}
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-zinc-900 border border-sky-500/40 text-[11px] text-sky-300 font-mono"
+              >
+                <FileCode className="w-2.5 h-2.5" />
+                <span className="truncate max-w-[150px]">{file.split("/").pop() || file}</span>
+                {onRemoveSelectedFile && (
+                  <button
+                    onClick={() => onRemoveSelectedFile(file)}
+                    className="hover:text-rose-400 ml-0.5"
+                    title={`Remove ${file}`}
+                  >
+                    <X className="w-2.5 h-2.5" />
+                  </button>
+                )}
+              </span>
+            ))}
+          </div>
+
+          {/* Quick Context Prompt Chips */}
+          <div className="flex flex-wrap gap-1 pt-1 border-t border-zinc-800/60">
+            {[
+              "Explain how these work together.",
+              "Compare these two implementations.",
+              "Trace the data flow between them.",
+            ].map((prompt, pIdx) => (
+              <button
+                key={pIdx}
+                onClick={() => handleSend(prompt)}
+                className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 border border-sky-500/20 transition-colors"
+              >
+                💡 {prompt}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Quick Questions Suggestions */}
-      {messages.length <= 2 && (
+      {messages.length <= 2 && selectedFiles.length === 0 && (
         <div className="px-4 py-2 border-t border-zinc-800/60 flex flex-wrap gap-1.5 bg-zinc-950">
           {[
             "Where is the main entry point?",

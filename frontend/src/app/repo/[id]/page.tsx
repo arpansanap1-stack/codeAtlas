@@ -17,6 +17,8 @@ import {
   Bug,
   AlertOctagon,
   Activity,
+  History,
+  Camera,
 } from "lucide-react";
 import { ArchitectureMap } from "@/components/ArchitectureMap";
 import { OnboardingView } from "@/components/OnboardingView";
@@ -27,6 +29,8 @@ import { JourneyPlayer } from "@/components/JourneyPlayer";
 import { DebugModal } from "@/components/DebugModal";
 import { ImpactModal } from "@/components/ImpactModal";
 import { HealthDashboardModal } from "@/components/HealthDashboardModal";
+import { GitHistoryModal } from "@/components/GitHistoryModal";
+import { ExportSnapshotModal } from "@/components/ExportSnapshotModal";
 import GeminiKeyModal from "@/components/GeminiKeyModal";
 import { getRepository, getRepositoryGraph } from "@/lib/api";
 import { GraphData, JourneyResponse, RepoIngestResponse } from "@/types";
@@ -65,6 +69,23 @@ export default function RepoWorkspace({ params }: PageProps) {
 
   // New Features: Codebase Health & Smell Detection State
   const [isHealthModalOpen, setIsHealthModalOpen] = useState(false);
+
+  // New Features: Git History Intelligence, Targeted Chat Context, and Architecture Snapshots
+  const [selectedChatFiles, setSelectedChatFiles] = useState<string[]>([]);
+  const [isGitHistoryModalOpen, setIsGitHistoryModalOpen] = useState(false);
+  const [gitHistoryTargetFile, setGitHistoryTargetFile] = useState<string>("");
+  const [isSnapshotModalOpen, setIsSnapshotModalOpen] = useState(false);
+
+  const handleToggleChatContext = (filePath: string) => {
+    setSelectedChatFiles((prev) =>
+      prev.includes(filePath) ? prev.filter((f) => f !== filePath) : [...prev, filePath]
+    );
+  };
+
+  const handleOpenGitHistory = (filePath: string) => {
+    setGitHistoryTargetFile(filePath);
+    setIsGitHistoryModalOpen(true);
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -249,6 +270,29 @@ export default function RepoWorkspace({ params }: PageProps) {
             <span className="hidden sm:inline">Health & Smells</span>
           </button>
 
+          {/* Git History Intelligence Button */}
+          <button
+            onClick={() => {
+              const fileToInspect = selectedFile || (graphData.nodes[0]?.id ?? "");
+              handleOpenGitHistory(fileToInspect);
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-850 border border-zinc-800 text-xs font-mono text-zinc-300 hover:text-white transition-all shadow-sm group"
+            title="Git History Intelligence: Authors, commit frequency, temporal co-change, and evolution timeline"
+          >
+            <History className="w-3.5 h-3.5 text-sky-400 group-hover:scale-110 transition-transform" />
+            <span className="hidden sm:inline">Git History</span>
+          </button>
+
+          {/* Architecture Snapshots & Export Button */}
+          <button
+            onClick={() => setIsSnapshotModalOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-850 border border-zinc-800 text-xs font-mono text-zinc-300 hover:text-white transition-all shadow-sm group"
+            title="Export architecture snapshots: SVG/PNG canvas diagrams, Mermaid Markdown reports"
+          >
+            <Camera className="w-3.5 h-3.5 text-purple-400 group-hover:scale-110 transition-transform" />
+            <span className="hidden sm:inline">Snapshots</span>
+          </button>
+
           {/* Clear Blast Radius Filter if active */}
           {impactAffectedNodes && (
             <button
@@ -328,6 +372,11 @@ export default function RepoWorkspace({ params }: PageProps) {
               repoId={repoId}
               repoName={repo.repo_name}
               onSelectCitation={handleSelectCitation}
+              selectedFiles={selectedChatFiles}
+              onRemoveSelectedFile={(f) => setSelectedChatFiles((prev) => prev.filter((p) => p !== f))}
+              onClearSelectedFiles={() => setSelectedChatFiles([])}
+              availableFiles={graphData.nodes.map((n) => n.id)}
+              onAddSelectedFile={(f) => setSelectedChatFiles((prev) => prev.includes(f) ? prev : [...prev, f])}
             />
           </div>
         )}
@@ -351,6 +400,9 @@ export default function RepoWorkspace({ params }: PageProps) {
               setImpactTargetFile(file);
               setIsImpactModalOpen(true);
             }}
+            onOpenGitHistory={handleOpenGitHistory}
+            onToggleChatContext={handleToggleChatContext}
+            isInChatContext={selectedFile ? selectedChatFiles.includes(selectedFile) : false}
           />
         )}
       </div>
@@ -407,6 +459,34 @@ export default function RepoWorkspace({ params }: PageProps) {
           setSelectedFile(filePath);
           setTargetLineRange(null);
         }}
+      />
+
+      {/* Git History Intelligence Modal */}
+      <GitHistoryModal
+        isOpen={isGitHistoryModalOpen}
+        onClose={() => setIsGitHistoryModalOpen(false)}
+        repoId={repoId}
+        repoName={repo.repo_name}
+        targetFile={gitHistoryTargetFile || selectedFile || (graphData.nodes[0]?.id ?? "")}
+        availableFiles={graphData.nodes.map((n) => n.id)}
+        onChangeTargetFile={(file) => setGitHistoryTargetFile(file)}
+        onSelectFile={(filePath) => {
+          setSelectedFile(filePath);
+          setTargetLineRange(null);
+        }}
+        onAddToChatContext={(file) => {
+          setSelectedChatFiles((prev) => (prev.includes(file) ? prev : [...prev, file]));
+        }}
+      />
+
+      {/* Architecture Snapshots & Export Engine Modal */}
+      <ExportSnapshotModal
+        isOpen={isSnapshotModalOpen}
+        onClose={() => setIsSnapshotModalOpen(false)}
+        repoName={repo.repo_name}
+        repoId={repoId}
+        graphData={graphData}
+        selectedFile={selectedFile}
       />
     </div>
   );

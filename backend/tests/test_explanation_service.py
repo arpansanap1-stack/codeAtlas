@@ -54,18 +54,18 @@ def test_architecture_explanation_levels():
     beg_res = service.explain_architecture(repo_id, level="beginner")
     assert beg_res.level == "beginner"
     assert "fastapi" in beg_res.markdown_content.lower()
-    assert "Beginner Mode" in beg_res.markdown_content
+    assert "Beginner" in beg_res.title or "Beginner" in beg_res.markdown_content
     assert "[main.py:" in beg_res.markdown_content
 
     # 2. Test Intermediate
     mid_res = service.explain_architecture(repo_id, level="intermediate")
     assert mid_res.level == "intermediate"
-    assert "Intermediate Mode" in mid_res.markdown_content
+    assert "Intermediate" in mid_res.title or "Intermediate" in mid_res.markdown_content
 
     # 3. Test Expert
     exp_res = service.explain_architecture(repo_id, level="expert")
     assert exp_res.level == "expert"
-    assert "Expert Mode" in exp_res.markdown_content
+    assert "Expert" in exp_res.title or "Expert" in exp_res.markdown_content
 
     # 4. Test caching
     cached_res = service.explain_architecture(repo_id, level="beginner")

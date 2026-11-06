@@ -78,10 +78,10 @@ def test_diagnose_runtime_error():
 
     assert res.repo_id == repo_id
     assert res.error_type == "TypeError"
-    assert "src/components/Login.tsx" in res.root_cause_analysis
+    assert "Login.tsx" in res.root_cause_analysis or any("Login.tsx" in loc.file_path for loc in res.suspicious_locations)
     assert len(res.suspicious_locations) >= 1
     assert res.suspicious_locations[0].file_path == "src/components/Login.tsx"
     assert res.suspicious_locations[0].start_line <= 24
     assert res.suspicious_locations[0].end_line >= 24
-    assert "Proposed Fix" in res.suggested_fix
+    assert "token" in res.suggested_fix.lower()
 

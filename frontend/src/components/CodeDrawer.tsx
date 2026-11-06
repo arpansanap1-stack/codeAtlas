@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Editor, { OnMount } from "@monaco-editor/react";
-import { X, ExternalLink, ArrowDownRight, ArrowUpRight, Copy, Check, Loader2, AlertOctagon } from "lucide-react";
+import { X, ExternalLink, ArrowDownRight, ArrowUpRight, Copy, Check, Loader2, AlertOctagon, History, MessageSquareCode } from "lucide-react";
 import { getFileContent } from "@/lib/api";
 import { GraphData } from "@/types";
 
@@ -14,6 +14,9 @@ interface CodeDrawerProps {
   onNavigateFile: (path: string) => void;
   targetLineRange?: [number, number] | null;
   onOpenImpactAnalysis?: (filePath: string) => void;
+  onOpenGitHistory?: (filePath: string) => void;
+  onToggleChatContext?: (filePath: string) => void;
+  isInChatContext?: boolean;
 }
 
 function getLanguageFromPath(filePath: string): string {
@@ -53,6 +56,9 @@ export function CodeDrawer({
   onNavigateFile,
   targetLineRange,
   onOpenImpactAnalysis,
+  onOpenGitHistory,
+  onToggleChatContext,
+  isInChatContext,
 }: CodeDrawerProps) {
   const [content, setContent] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -182,6 +188,32 @@ export function CodeDrawer({
         </div>
 
         <div className="flex items-center gap-2">
+          {onToggleChatContext && filePath && (
+            <button
+              onClick={() => onToggleChatContext(filePath)}
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded border text-[11px] font-mono transition-colors ${
+                isInChatContext
+                  ? "bg-sky-500/20 text-sky-300 border-sky-500/40"
+                  : "bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border-zinc-700"
+              }`}
+              title={isInChatContext ? "Remove from AI Chat context" : "Add to AI Chat targeted context"}
+            >
+              <MessageSquareCode className="w-3.5 h-3.5 text-sky-400" />
+              <span>{isInChatContext ? "Pinned to Chat" : "Pin to Chat"}</span>
+            </button>
+          )}
+
+          {onOpenGitHistory && filePath && (
+            <button
+              onClick={() => onOpenGitHistory(filePath)}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 text-[11px] font-mono transition-colors"
+              title="View Git Authorship & Evolution History"
+            >
+              <History className="w-3.5 h-3.5" />
+              <span>Git History</span>
+            </button>
+          )}
+
           {onOpenImpactAnalysis && filePath && (
             <button
               onClick={() => onOpenImpactAnalysis(filePath)}

@@ -160,6 +160,65 @@ Every new feature implemented in this codebase must be logged here following the
 - **Notes / Breaking Changes:**
   Integrated with GET `/api/repos/{repo_id}/health-metrics`.
 
+### [FEAT-007] Git History Intelligence & Code Evolution Engine
+- **Status:** [COMPLETED]
+- **Created Date:** 2026-11-06
+- **Target Modules:**
+  - `backend/app/models/schemas.py`
+  - `backend/app/services/git_history_service.py`
+  - `backend/app/main.py`
+  - `backend/tests/test_git_history_service.py`
+  - `frontend/src/types/index.ts`
+  - `frontend/src/lib/api.ts`
+  - `frontend/src/components/GitHistoryModal.tsx`
+  - `frontend/src/components/CodeDrawer.tsx`
+  - `frontend/src/app/repo/[id]/page.tsx`
+- **Description & User Value:**
+  Provides deep historical git intelligence for any selected module: top authors/contributors, churn rate/commit frequency, co-changed files (temporal coupling), and an interactive chronological Code Evolution timeline with diff metrics and commit logs.
+- **Verification Commands:**
+  - Backend: `backend\.venv\Scripts\pytest backend/tests/test_git_history_service.py -v` (2 passed)
+  - Frontend: `frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit` (0 errors)
+- **Git Commit:** Pending
+- **Notes / Breaking Changes:**
+  Adds GET `/api/repos/{repo_id}/git-history?file_path=...`.
+
+### [FEAT-008] Chat With Selected Code (Multi-File Targeted Context)
+- **Status:** [COMPLETED]
+- **Created Date:** 2026-11-06
+- **Target Modules:**
+  - `backend/app/models/schemas.py`
+  - `backend/app/services/chat_service.py`
+  - `backend/app/main.py`
+  - `backend/tests/test_chat_selected.py`
+  - `frontend/src/types/index.ts`
+  - `frontend/src/components/ChatPanel.tsx`
+  - `frontend/src/components/CodeDrawer.tsx`
+  - `frontend/src/components/ArchitectureMap.tsx`
+  - `frontend/src/app/repo/[id]/page.tsx`
+- **Description & User Value:**
+  Allows developers to select multiple files or nodes across the repository and run targeted queries ("Explain how these work together", "Compare these implementations", "Trace data flow"). Bypasses generic RAG search to directly inject the pinned modules' full AST context into the LLM system prompt.
+- **Verification Commands:**
+  - Backend: `backend\.venv\Scripts\pytest backend/tests/test_chat_selected.py -v` (2 passed)
+  - Frontend: `frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit` (0 errors)
+- **Git Commit:** Pending
+- **Notes / Breaking Changes:**
+  Enhances POST `/api/repos/{repo_id}/chat` with optional `selected_files` array.
+
+### [FEAT-009] Architecture Snapshots & Export Engine
+- **Status:** [COMPLETED]
+- **Created Date:** 2026-11-06
+- **Target Modules:**
+  - `frontend/src/components/ExportSnapshotModal.tsx`
+  - `frontend/src/components/ArchitectureMap.tsx`
+  - `frontend/src/app/repo/[id]/page.tsx`
+- **Description & User Value:**
+  Enables developers and technical leads to export architecture snapshots in multiple formats: high-resolution SVG/PNG of the interactive React Flow canvas, standalone Markdown documentation reports with embedded Mermaid architecture diagrams, and targeted module summaries.
+- **Verification Commands:**
+  - Frontend: `frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit` (0 errors)
+- **Git Commit:** Pending
+- **Notes / Breaking Changes:**
+  Adds visual snapshot modal and vector SVG/PNG canvas export capability.
+
 <!-- Add new feature blocks below following this exact template -->
 
 ### 📝 Feature Template (Copy & Paste for New Features)

@@ -210,6 +210,42 @@ export interface CodebaseHealthResponse {
   summary: string;
 }
 
+export interface FileContributor {
+  name: string;
+  email: string;
+  commits_count: number;
+  percentage: number;
+}
+
+export interface CoChangedFile {
+  file_path: string;
+  co_change_count: number;
+  coupling_strength: number;
+}
+
+export interface CommitHistoryItem {
+  commit_hash: string;
+  author_name: string;
+  author_email: string;
+  date: string;
+  message: string;
+  insertions: number;
+  deletions: number;
+}
+
+export interface FileGitIntelligenceResponse {
+  repo_id: string;
+  file_path: string;
+  total_commits: number;
+  churn_rate: string;
+  last_modified: string;
+  contributors: FileContributor[];
+  co_changed_files: CoChangedFile[];
+  recent_commits: CommitHistoryItem[];
+  evolution_summary: string;
+}
+
+
 
 
 

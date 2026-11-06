@@ -21,6 +21,7 @@ from app.models.schemas import (
     DebugRequest,
     DebugResponse,
     FileContentResponse,
+    FileGitIntelligenceResponse,
     GeminiKeyRequest,
     GeminiKeyResponse,
     GeminiSettingsResponse,
@@ -43,6 +44,7 @@ from app.services.debugger_service import get_debugger_service
 from app.services.embedding_service import get_embedding_service
 from app.services.explanation_service import get_explanation_service
 from app.services.git_service import get_git_service
+from app.services.git_history_service import get_git_history_service
 from app.services.graph_service import get_graph_service
 from app.services.health_service import get_health_service
 from app.services.impact_service import get_impact_service
@@ -350,7 +352,11 @@ def chat_with_repo(repo_id: str, payload: ChatRequest):
 
     chat_service = get_chat_service()
     return StreamingResponse(
-        chat_service.stream_chat_response(repo_id, payload.message),
+        chat_service.stream_chat_response(
+            repo_id=repo_id,
+            user_query=payload.message,
+            selected_files=payload.selected_files,
+        ),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
@@ -563,6 +569,32 @@ def get_codebase_health_metrics(repo_id: str):
 
     health_service = get_health_service()
     return health_service.evaluate_codebase_health(repo_id=repo_id)
+
+
+@app.get(
+    "/api/repos/{repo_id}/git-history",
+    response_model=FileGitIntelligenceResponse,
+    tags=["Git History Intelligence"],
+)
+def get_file_git_history(
+    repo_id: str,
+    file_path: str = Query(..., description="Relative file path within repository"),
+):
+    """
+    Returns commit history, churn rate, top contributors, co-changed files,
+    and evolutionary summary for a specific module.
+    """
+    db = get_db()
+    repo = db.get_repository(repo_id)
+    if not repo:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Repository '{repo_id}' not found.",
+        )
+
+    history_service = get_git_history_service()
+    return history_service.analyze_file_history(repo_id=repo_id, file_path=file_path)
+
 
 
 

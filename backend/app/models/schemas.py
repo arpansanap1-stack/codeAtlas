@@ -131,6 +131,10 @@ class RepoChunksResponse(BaseModel):
 
 class ChatRequest(BaseModel):
     message: str = Field(..., description="Developer inquiry about the codebase")
+    selected_files: Optional[List[str]] = Field(
+        default=None,
+        description="Optional explicit user-selected files to constrain or focus the chat analysis",
+    )
 
 
 class FileContentResponse(BaseModel):
@@ -332,6 +336,44 @@ class CodebaseHealthResponse(BaseModel):
     dead_files: List[str]
     smells: List[ArchitectureSmell]
     summary: str
+
+
+class FileContributor(BaseModel):
+    name: str
+    email: str
+    commits_count: int
+    percentage: float
+
+
+class CoChangedFile(BaseModel):
+    file_path: str
+    co_change_count: int
+    coupling_strength: float = Field(
+        ..., description="Co-change strength normalized between 0.0 and 1.0"
+    )
+
+
+class CommitHistoryItem(BaseModel):
+    commit_hash: str
+    author_name: str
+    author_email: str
+    date: str
+    message: str
+    insertions: int
+    deletions: int
+
+
+class FileGitIntelligenceResponse(BaseModel):
+    repo_id: str
+    file_path: str
+    total_commits: int
+    churn_rate: str = Field(..., description="'High', 'Moderate', or 'Low'")
+    last_modified: str
+    contributors: List[FileContributor]
+    co_changed_files: List[CoChangedFile]
+    recent_commits: List[CommitHistoryItem]
+    evolution_summary: str
+
 
 
 

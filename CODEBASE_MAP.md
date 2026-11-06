@@ -22,6 +22,9 @@
 | **Debug Runtime Errors & Stack Traces** | [`backend/app/services/debugger_service.py`](file:///c:/Users/arpan/codeAtlas/backend/app/services/debugger_service.py)<br>[`frontend/src/components/DebugModal.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/DebugModal.tsx) | `DebuggerService.diagnose_error`, `DebugModal`, fix diff generator |
 | **"What Happens If I Change This?" Impact Analysis** | [`backend/app/services/impact_service.py`](file:///c:/Users/arpan/codeAtlas/backend/app/services/impact_service.py)<br>[`frontend/src/components/ImpactModal.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/ImpactModal.tsx) | `ImpactService.analyze_impact`, `ImpactModal`, blast radius highlighting |
 | **Codebase Health & Architecture Smells Dashboard** | [`backend/app/services/health_service.py`](file:///c:/Users/arpan/codeAtlas/backend/app/services/health_service.py)<br>[`frontend/src/components/HealthDashboardModal.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/HealthDashboardModal.tsx) | `HealthService.evaluate_codebase_health`, `find_graph_cycles`, `HealthDashboardModal` |
+| **Git History Intelligence & Code Evolution** | [`backend/app/services/git_history_service.py`](file:///c:/Users/arpan/codeAtlas/backend/app/services/git_history_service.py)<br>[`frontend/src/components/GitHistoryModal.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/GitHistoryModal.tsx) | `GitHistoryService.analyze_file_history`, `GitHistoryModal`, commit evolution |
+| **Chat With Selected Code (Multi-File Context)** | [`backend/app/services/chat_service.py`](file:///c:/Users/arpan/codeAtlas/backend/app/services/chat_service.py)<br>[`frontend/src/components/ChatPanel.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/ChatPanel.tsx) | `prepare_chat_context`, `selected_files`, pinned context pills |
+| **Architecture Snapshots & Export Engine** | [`frontend/src/components/ExportSnapshotModal.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/ExportSnapshotModal.tsx) | SVG/PNG canvas export, Markdown doc download, Mermaid diagram generator |
 | **Modify React Flow canvas, node physics, or layout** | [`frontend/src/components/ArchitectureMap.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/ArchitectureMap.tsx)<br>[`frontend/src/components/CustomNode.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/CustomNode.tsx) | `ArchitectureMap`, Dagre layout engine, custom node styling |
 | **Change Monaco editor code viewer / line highlight** | [`frontend/src/components/CodeDrawer.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/CodeDrawer.tsx) | `CodeDrawer`, Monaco `deltaDecorations`, `revealLineInCenter` |
 | **Update Chat drawer UI or citation button handling** | [`frontend/src/components/ChatPanel.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/ChatPanel.tsx) | `ChatPanel`, SSE reader, citation regex parser |
@@ -45,17 +48,18 @@ codeAtlas/
 │   │   │   └── schemas.py    # Pydantic v2 validation models & URL normalizer
 │   │   └── services/
 │   │       ├── ast_service.py        # Tree-sitter & Python AST chunker
-│   │       ├── chat_service.py       # SSE streaming RAG Q&A engine
+│   │       ├── chat_service.py       # SSE streaming RAG Q&A & multi-file context engine
 │   │       ├── debugger_service.py   # AI Error explorer & root-cause analyzer
 │   │       ├── embedding_service.py  # Gemini text-embedding-004 embedder
 │   │       ├── explanation_service.py# Multi-level architecture explanation synthesizer
+│   │       ├── git_history_service.py# Commit churn, top authors, co-change coupling & evolution
 │   │       ├── git_service.py        # Shallow clone, filter, tree generator
 │   │       ├── graph_service.py      # Import resolver & React Flow graph builder
 │   │       ├── health_service.py     # Codebase health score, cycle detection & architecture smells
 │   │       ├── impact_service.py     # Reverse-dependency blast radius analyzer
 │   │       ├── journey_service.py    # Guided interactive execution pathfinder
 │   │       └── onboarding_service.py # ONBOARDING.md doc generator
-│   ├── tests/                # Pytest unit & integration test suite
+│   ├── tests/                # Pytest unit & integration test suite (37 tests)
 │   ├── requirements.txt      # Backend Python dependencies
 │   └── schema.sql            # PostgreSQL + pgvector schema & RRF RPC
 │
@@ -69,11 +73,13 @@ codeAtlas/
 │   │   ├── components/
 │   │   │   ├── ArchitectureExplanationModal.tsx # Multi-level architecture modal
 │   │   │   ├── ArchitectureMap.tsx   # React Flow canvas + Dagre auto-layout
-│   │   │   ├── ChatPanel.tsx         # SSE streaming chat with citation pills
-│   │   │   ├── CodeDrawer.tsx        # Monaco editor slide-over with line highlights
+│   │   │   ├── ChatPanel.tsx         # SSE streaming chat with pinned multi-file context & citation pills
+│   │   │   ├── CodeDrawer.tsx        # Monaco editor slide-over with line highlights & git history / pin actions
 │   │   │   ├── CustomNode.tsx        # Styled node with category badges & degree count
 │   │   │   ├── DebugModal.tsx        # AI Debugger & stack trace root cause modal
+│   │   │   ├── ExportSnapshotModal.tsx # SVG/PNG canvas export, Markdown doc download & Mermaid generator
 │   │   │   ├── GeminiKeyModal.tsx    # API key setup modal
+│   │   │   ├── GitHistoryModal.tsx   # Author churn, co-change coupling & evolution timeline modal
 │   │   │   ├── HealthDashboardModal.tsx # Codebase health dashboard & architecture smell modal
 │   │   │   ├── ImpactModal.tsx       # 'What happens if I change this?' impact modal
 │   │   │   ├── JourneyPlayer.tsx     # Step-by-step interactive journey controller
