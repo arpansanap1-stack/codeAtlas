@@ -33,7 +33,7 @@ Whenever you are tasked with implementing a new feature, follow these 6 sequenti
   ```
 - For frontend changes: verify TypeScript build:
   ```pwsh
-  npm --prefix frontend run build
+  frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit
   ```
 - If a new feature introduces new logic, write a corresponding unit test in `backend/tests/`.
 

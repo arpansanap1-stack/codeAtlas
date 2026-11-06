@@ -13,7 +13,7 @@
 
 3. **VERIFICATION COMMANDS:**
    - Run backend tests: `backend\.venv\Scripts\pytest backend/tests/<test_file>.py`
-   - Test frontend build: `npm --prefix frontend run build`
+   - Test frontend build: `frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit`
 
 4. **CODING QUALITY:**
    - No TODOs, no dummy placeholders.

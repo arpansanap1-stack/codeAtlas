@@ -133,5 +133,5 @@ backend\.venv\Scripts\pytest backend/tests/test_ast_service.py -v
 
 ### Verify frontend type-checking
 ```pwsh
-npm --prefix frontend run build
+frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit
 ```
