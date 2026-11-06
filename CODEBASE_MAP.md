@@ -75,6 +75,7 @@ codeAtlas/
 │   │   │   ├── ArchitectureMap.tsx   # React Flow canvas + Dagre auto-layout
 │   │   │   ├── ChatPanel.tsx         # SSE streaming chat with pinned multi-file context & citation pills
 │   │   │   ├── CodeDrawer.tsx        # Monaco editor slide-over with line highlights & git history / pin actions
+│   │   │   ├── CommandPalette.tsx    # Universal Ctrl+K / Cmd+K keyboard launcher
 │   │   │   ├── CustomNode.tsx        # Styled node with category badges & degree count
 │   │   │   ├── DebugModal.tsx        # AI Debugger & stack trace root cause modal
 │   │   │   ├── ExportSnapshotModal.tsx # SVG/PNG canvas export, Markdown doc download & Mermaid generator
@@ -84,7 +85,8 @@ codeAtlas/
 │   │   │   ├── ImpactModal.tsx       # 'What happens if I change this?' impact modal
 │   │   │   ├── JourneyPlayer.tsx     # Step-by-step interactive journey controller
 │   │   │   ├── MermaidRenderer.tsx   # Live Mermaid SVG renderer
-│   │   │   └── OnboardingView.tsx    # Onboarding documentation renderer & export
+│   │   │   ├── OnboardingView.tsx    # Onboarding documentation renderer & export
+│   │   │   └── RepoOverviewView.tsx  # Executive overview dashboard & quick-action launcher
 │   │   ├── lib/
 │   │   │   ├── api.ts                # Strongly-typed fetch API client
 │   │   │   └── utils.ts              # Tailwind clsx + twMerge utility

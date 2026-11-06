@@ -65,18 +65,18 @@ export function DebugModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-4xl h-[90vh] bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/75 backdrop-blur-md animate-fade-in">
+      <div className="relative w-full max-w-4xl h-[90vh] bg-panel border border-borderDefault rounded-2xl shadow-elevated flex flex-col overflow-hidden animate-scale-in">
         {/* Modal Header */}
-        <div className="h-16 px-6 border-b border-zinc-800/80 bg-zinc-900/60 flex items-center justify-between gap-4 shrink-0">
+        <div className="h-16 px-6 border-b border-borderSubtle bg-surface/80 flex items-center justify-between gap-4 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400">
+            <div className="w-8 h-8 rounded-xl bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-rose-400">
               <Bug className="w-4 h-4" />
             </div>
             <div>
               <h2 className="text-sm font-semibold text-zinc-100 flex items-center gap-2">
                 <span>AI Debugger & Error Explorer</span>
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700/60 font-mono">
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-surfaceElevated text-zinc-400 border border-borderSubtle font-mono">
                   {repoName}
                 </span>
               </h2>
@@ -88,16 +88,16 @@ export function DebugModal({
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/80 transition-colors"
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-surfaceHover transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-workspace">
           {/* Input Section */}
-          <div className="space-y-3 p-4 rounded-xl bg-zinc-900/40 border border-zinc-800/70">
+          <div className="space-y-3 p-4 rounded-xl bg-panel border border-borderDefault shadow-card">
             <div className="space-y-1.5">
               <label className="text-xs font-semibold text-zinc-200 flex items-center justify-between">
                 <span>Error Message or Stack Trace:</span>
@@ -110,7 +110,7 @@ export function DebugModal({
                 onChange={(e) => setErrorMessage(e.target.value)}
                 placeholder="Paste error trace here, for example:&#10;TypeError: Cannot read properties of undefined (reading 'token')&#10;  at handleLogin (src/components/Login.tsx:24:12)"
                 rows={4}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg p-3 text-xs font-mono text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-rose-500/60 resize-y"
+                className="w-full bg-surface border border-borderSubtle rounded-xl p-3 text-xs font-mono text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-borderFocus resize-y transition-colors"
               />
             </div>
 
@@ -120,13 +120,13 @@ export function DebugModal({
                 value={contextHint}
                 onChange={(e) => setContextHint(e.target.value)}
                 placeholder="Optional context hint (e.g. Occurred when user clicked Submit without email)"
-                className="flex-1 bg-zinc-950 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-100 placeholder:text-zinc-600 focus:outline-none focus:border-rose-500/60 font-mono"
+                className="flex-1 bg-surface border border-borderSubtle rounded-xl px-3.5 py-2 text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-borderFocus font-mono transition-colors"
               />
 
               <button
                 onClick={handleDiagnose}
                 disabled={loading || !errorMessage.trim()}
-                className="px-4 py-2 rounded-lg bg-rose-600 hover:bg-rose-500 text-xs font-semibold text-white flex items-center gap-1.5 shadow-sm transition-colors disabled:opacity-50 shrink-0"
+                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-xs font-semibold text-white flex items-center gap-1.5 shadow-sm transition-all disabled:opacity-50 shrink-0 cursor-pointer"
               >
                 {loading ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />

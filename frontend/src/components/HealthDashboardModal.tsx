@@ -103,16 +103,16 @@ export function HealthDashboardModal({
   const scoreTheme = data ? getScoreColor(data.health_score) : getScoreColor(100);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
       <div
-        className="w-full max-w-5xl h-[88vh] bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl flex flex-col overflow-hidden text-zinc-100"
+        className="w-full max-w-5xl h-[88vh] bg-panel border border-borderDefault rounded-2xl shadow-elevated flex flex-col overflow-hidden text-zinc-100 animate-scale-in"
         role="dialog"
         aria-modal="true"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 bg-zinc-900/60 shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-borderSubtle bg-surface/80 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-sky-500/15 border border-sky-500/30 text-sky-400">
+            <div className="p-2 rounded-xl bg-accent-indigo/15 border border-accent-indigo/30 text-accent-indigoLight">
               <Activity className="w-5 h-5" />
             </div>
             <div>
@@ -120,7 +120,7 @@ export function HealthDashboardModal({
                 <span>Codebase Health & Architecture Smell Detection</span>
                 {data && (
                   <span
-                    className={`text-xs px-2 py-0.5 rounded-full border font-mono font-medium ${scoreTheme.bg} ${scoreTheme.text}`}
+                    className={`text-xs px-2.5 py-0.5 rounded-full border font-mono font-medium ${scoreTheme.bg} ${scoreTheme.text}`}
                   >
                     Score: {data.health_score}/100 • {data.health_rating}
                   </span>
@@ -136,14 +136,14 @@ export function HealthDashboardModal({
             <button
               onClick={loadHealthData}
               disabled={loading}
-              className="p-1.5 rounded-lg border border-zinc-800 hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors"
+              className="p-1.5 rounded-lg border border-borderSubtle hover:bg-surfaceHover text-zinc-400 hover:text-white transition-colors cursor-pointer"
               title="Refresh Health Analysis"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? "animate-spin" : ""}`} />
             </button>
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg border border-zinc-800 hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors"
+              className="p-1.5 rounded-lg border border-borderSubtle hover:bg-surfaceHover text-zinc-400 hover:text-white transition-colors cursor-pointer"
               title="Close modal"
             >
               <X className="w-4 h-4" />

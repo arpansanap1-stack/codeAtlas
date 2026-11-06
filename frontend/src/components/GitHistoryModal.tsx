@@ -98,16 +98,16 @@ export function GitHistoryModal({
   const churnInfo = data ? getChurnBadge(data.churn_rate) : getChurnBadge("low");
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-150">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
       <div
-        className="w-full max-w-4xl h-[86vh] bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl flex flex-col overflow-hidden text-zinc-100"
+        className="w-full max-w-4xl h-[86vh] bg-panel border border-borderDefault rounded-2xl shadow-elevated flex flex-col overflow-hidden text-zinc-100 animate-scale-in"
         role="dialog"
         aria-modal="true"
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-zinc-800 bg-zinc-900/60 shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-borderSubtle bg-surface/80 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-sky-500/15 border border-sky-500/30 text-sky-400">
+            <div className="p-2 rounded-xl bg-accent-sky/15 border border-accent-sky/30 text-accent-sky">
               <History className="w-5 h-5" />
             </div>
             <div>
@@ -129,7 +129,7 @@ export function GitHistoryModal({
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg border border-zinc-800 hover:bg-zinc-800 text-zinc-400 hover:text-white transition-colors"
+            className="p-1.5 rounded-lg border border-borderSubtle hover:bg-surfaceHover text-zinc-400 hover:text-white transition-colors cursor-pointer"
             title="Close modal"
           >
             <X className="w-4 h-4" />
@@ -137,13 +137,13 @@ export function GitHistoryModal({
         </div>
 
         {/* Target File Selector Bar */}
-        <div className="px-6 py-3 border-b border-zinc-800/80 bg-zinc-900/30 flex flex-wrap items-center justify-between gap-3 shrink-0">
+        <div className="px-6 py-3 border-b border-borderSubtle bg-surface/40 flex flex-wrap items-center justify-between gap-3 shrink-0">
           <div className="flex items-center gap-2 font-mono text-xs text-zinc-300">
             <span className="text-zinc-500">Inspecting Module:</span>
             <select
               value={targetFile}
               onChange={(e) => onChangeTargetFile(e.target.value)}
-              className="bg-zinc-900 border border-zinc-700/80 rounded px-2.5 py-1 text-sky-300 font-mono text-xs focus:outline-none focus:border-sky-500 max-w-sm truncate"
+              className="bg-surface border border-borderSubtle rounded-lg px-2.5 py-1 text-accent-sky font-mono text-xs focus:outline-none focus:border-borderFocus max-w-sm truncate transition-colors"
             >
               {availableFiles.map((f) => (
                 <option key={f} value={f}>

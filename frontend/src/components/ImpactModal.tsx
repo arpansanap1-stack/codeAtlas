@@ -102,18 +102,18 @@ export function ImpactModal({
   const riskBadge = data ? getRiskBadge(data.risk_level) : null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/75 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-3xl h-[85vh] bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/75 backdrop-blur-md animate-fade-in">
+      <div className="relative w-full max-w-3xl h-[85vh] bg-panel border border-borderDefault rounded-2xl shadow-elevated flex flex-col overflow-hidden animate-scale-in">
         {/* Modal Header */}
-        <div className="h-16 px-6 border-b border-zinc-800/80 bg-zinc-900/60 flex items-center justify-between gap-4 shrink-0">
+        <div className="h-16 px-6 border-b border-borderSubtle bg-surface/80 flex items-center justify-between gap-4 shrink-0">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
               <AlertOctagon className="w-4 h-4" />
             </div>
             <div className="min-w-0">
               <h2 className="text-sm font-semibold text-zinc-100 flex items-center gap-2 truncate">
                 <span>Impact Analysis Engine</span>
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700/60 font-mono">
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-surfaceElevated text-zinc-400 border border-borderSubtle font-mono">
                   What Happens If I Change This?
                 </span>
               </h2>
@@ -125,16 +125,16 @@ export function ImpactModal({
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/80 transition-colors shrink-0"
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-surfaceHover transition-colors shrink-0 cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-5">
+        <div className="flex-1 overflow-y-auto p-6 space-y-5 bg-workspace">
           {/* File Selector */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-zinc-900/50 border border-zinc-800">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-panel border border-borderDefault shadow-card">
             <div className="flex items-center gap-2 min-w-0">
               <span className="text-xs font-semibold text-zinc-300 shrink-0">
                 Evaluating File:
@@ -142,7 +142,7 @@ export function ImpactModal({
               <select
                 value={targetFile}
                 onChange={(e) => onChangeTargetFile(e.target.value)}
-                className="bg-zinc-950 border border-zinc-800 rounded-md px-2.5 py-1 text-xs font-mono text-zinc-100 focus:outline-none focus:border-amber-500/60 max-w-xs truncate"
+                className="bg-surface border border-borderSubtle rounded-lg px-2.5 py-1 text-xs font-mono text-zinc-100 focus:outline-none focus:border-borderFocus max-w-xs truncate transition-colors"
               >
                 {availableFiles.map((f) => (
                   <option key={f} value={f}>
@@ -158,7 +158,7 @@ export function ImpactModal({
                   onHighlightOnMap(data.all_affected_file_paths, targetFile);
                   onClose();
                 }}
-                className="px-3 py-1.5 rounded-lg bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-400 text-xs font-mono flex items-center gap-1.5 transition-colors shrink-0"
+                className="px-3.5 py-1.5 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/30 text-amber-300 text-xs font-mono flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer"
                 title="Highlight affected nodes on React Flow Canvas"
               >
                 <Network className="w-3.5 h-3.5" />

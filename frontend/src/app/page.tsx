@@ -14,6 +14,10 @@ import {
   ArrowRight,
   ExternalLink,
   MessageSquare,
+  Network,
+  Route,
+  Activity,
+  Bug,
 } from "lucide-react";
 import { ArchitectureMap } from "@/components/ArchitectureMap";
 import { CodeDrawer } from "@/components/CodeDrawer";
@@ -26,7 +30,7 @@ const STATUS_STEPS: { key: RepoStatus; label: string }[] = [
   { key: "cloning", label: "Cloning Repository" },
   { key: "parsing", label: "AST Parsing & Graph" },
   { key: "indexing", label: "Vector Embeddings" },
-  { key: "completed", label: "Ready" },
+  { key: "completed", label: "Workspace Ready" },
 ];
 
 export default function Home() {
@@ -88,27 +92,27 @@ export default function Home() {
   };
 
   return (
-    <main className="relative flex flex-col h-screen w-screen overflow-hidden bg-zinc-950 text-zinc-100">
+    <main className="relative flex flex-col h-screen w-screen overflow-hidden bg-workspace text-zinc-100 font-sans">
       {/* Top Navigation & Repository Input Bar */}
-      <header className="h-14 border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md px-4 flex items-center justify-between gap-4 z-20 shrink-0">
-        {/* Logo */}
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-zinc-900 border border-zinc-800 flex items-center justify-center text-sky-400 shadow-sm">
+      <header className="h-14 border-b border-borderSubtle bg-panel/90 backdrop-blur-xl px-4 md:px-6 flex items-center justify-between gap-4 z-20 shrink-0">
+        {/* Brand Logo */}
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-xl bg-surface border border-borderSubtle flex items-center justify-center text-accent-indigoLight shadow-glowIndigo">
             <Compass className="w-4 h-4" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-semibold text-sm tracking-tight text-zinc-100">
+              <span className="font-semibold text-sm tracking-tight text-white">
                 CodeAtlas
               </span>
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-zinc-800/80 text-zinc-400 border border-zinc-700/40">
-                v0.1
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-surface border border-borderSubtle text-zinc-400">
+                v1.1
               </span>
             </div>
           </div>
         </div>
 
-        {/* Input Form */}
+        {/* Center: Repository URL Input Form */}
         <form onSubmit={handleAnalyze} className="flex-1 max-w-xl flex items-center gap-2">
           <div className="relative flex-1">
             <GitBranch className="w-3.5 h-3.5 text-zinc-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
@@ -117,86 +121,83 @@ export default function Home() {
               value={repoUrl}
               onChange={(e) => setRepoUrl(e.target.value)}
               placeholder="https://github.com/owner/repository"
-              className="w-full h-8 bg-zinc-900/90 border border-zinc-800 rounded-md pl-9 pr-3 text-xs font-mono text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-zinc-700 focus:ring-1 focus:ring-zinc-700"
+              className="w-full h-9 bg-surface border border-borderSubtle rounded-xl pl-9 pr-3 text-xs font-mono text-zinc-100 placeholder-zinc-500 focus:outline-none focus:border-borderFocus transition-colors"
             />
           </div>
+
           <button
             type="submit"
             disabled={loading}
-            className="h-8 px-3.5 rounded-md bg-zinc-100 text-zinc-900 hover:bg-white text-xs font-medium transition-colors flex items-center gap-1.5 disabled:opacity-50 shrink-0 shadow-sm"
+            className="h-9 px-4 rounded-xl bg-accent-indigo hover:bg-accent-indigoLight text-white text-xs font-medium transition-all flex items-center gap-1.5 disabled:opacity-50 shrink-0 shadow-glowIndigo cursor-pointer"
           >
             {loading ? (
               <>
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Cloning...</span>
+                <span>Ingesting...</span>
               </>
             ) : (
               <>
-                <Sparkles className="w-3.5 h-3.5 text-zinc-700" />
+                <Sparkles className="w-3.5 h-3.5 text-white" />
                 <span>Analyze Repo</span>
               </>
             )}
           </button>
         </form>
 
-        {/* Right Info / Sample Buttons & Gemini AI Badge */}
+        {/* Right Info: Sample Repos & Gemini AI Badge */}
         <div className="flex items-center gap-2 text-xs font-mono text-zinc-400">
           <GeminiKeyModal />
-          <span className="text-[11px] text-zinc-500 hidden md:inline ml-1">Try:</span>
+          <span className="text-[11px] text-zinc-500 hidden lg:inline ml-1">Try:</span>
           <button
             type="button"
-            onClick={() => {
-              setRepoUrl("https://github.com/octocat/Spoon-Knife");
-            }}
-            className="px-2 py-1 rounded bg-zinc-900 hover:bg-zinc-800 text-[11px] text-zinc-300 border border-zinc-800 transition-colors"
+            onClick={() => setRepoUrl("https://github.com/octocat/Spoon-Knife")}
+            className="hidden sm:inline-block px-2.5 py-1 rounded-lg bg-surface hover:bg-surfaceHover text-[11px] text-zinc-300 border border-borderSubtle transition-colors cursor-pointer"
           >
             Spoon-Knife
           </button>
           <button
             type="button"
-            onClick={() => {
-              setRepoUrl("https://github.com/octocat/Hello-World");
-            }}
-            className="px-2 py-1 rounded bg-zinc-900 hover:bg-zinc-800 text-[11px] text-zinc-300 border border-zinc-800 transition-colors"
+            onClick={() => setRepoUrl("https://github.com/octocat/Hello-World")}
+            className="hidden md:inline-block px-2.5 py-1 rounded-lg bg-surface hover:bg-surfaceHover text-[11px] text-zinc-300 border border-borderSubtle transition-colors cursor-pointer"
           >
             Hello-World
           </button>
         </div>
       </header>
 
-      {/* Status Progress Bar (if processing or loading) */}
+      {/* Ingestion Status Progress Tracker */}
       {loading && !repoData && (
-        <div className="h-9 bg-zinc-900/90 border-b border-zinc-800/80 px-4 flex items-center justify-between text-xs font-mono z-10">
+        <div className="h-10 bg-panel border-b border-borderSubtle px-6 flex items-center justify-between text-xs font-mono z-10 animate-fade-in">
           <div className="flex items-center gap-4">
-            <span className="text-zinc-400 flex items-center gap-1.5">
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-sky-400" />
+            <span className="text-zinc-300 flex items-center gap-2">
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-accent-indigoLight" />
               <span>Cloning GitHub repository & parsing AST chunks...</span>
             </span>
             <span className="text-zinc-500 text-[11px] hidden sm:inline">
-              (Shallow clone, noise filter, AST tree-sitter & graph indexing)
+              (Shallow clone, noise filter, AST tree-sitter & dependency graph indexing)
             </span>
           </div>
         </div>
       )}
 
       {repoData && repoData.status !== "completed" && repoData.status !== "failed" && (
-        <div className="h-9 bg-zinc-900/90 border-b border-zinc-800/80 px-4 flex items-center justify-between text-xs font-mono z-10">
+        <div className="h-10 bg-panel border-b border-borderSubtle px-6 flex items-center justify-between text-xs font-mono z-10 animate-fade-in">
           <div className="flex items-center gap-4">
-            <span className="text-zinc-400 flex items-center gap-1.5">
-              <Loader2 className="w-3.5 h-3.5 animate-spin text-sky-400" />
+            <span className="text-zinc-300 flex items-center gap-2">
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-accent-indigoLight" />
               <span>Analyzing {repoData.repo_name}...</span>
             </span>
             <div className="flex items-center gap-2">
               {STATUS_STEPS.map((s, idx) => (
                 <div key={s.key} className="flex items-center gap-1.5">
                   <span
-                    className={`w-1.5 h-1.5 rounded-full ${
-                      repoData.status === s.key ? "bg-sky-400 animate-pulse" : "bg-zinc-700"
+                    className={`w-2 h-2 rounded-full ${
+                      repoData.status === s.key ? "bg-accent-indigoLight animate-pulse" : "bg-zinc-700"
                     }`}
                   />
                   <span
                     className={`text-[11px] ${
-                      repoData.status === s.key ? "text-zinc-200" : "text-zinc-500"
+                      repoData.status === s.key ? "text-zinc-200 font-medium" : "text-zinc-500"
                     }`}
                   >
                     {s.label}
@@ -213,27 +214,32 @@ export default function Home() {
 
       {/* Error Alert */}
       {error && (
-        <div className="p-3 bg-rose-500/10 border-b border-rose-500/20 text-xs font-mono text-rose-400 flex items-center justify-between z-10">
+        <div className="p-3 bg-rose-500/10 border-b border-rose-500/20 text-xs font-mono text-rose-400 flex items-center justify-between px-6 z-10">
           <span>{error}</span>
-          <button onClick={() => setError(null)} className="text-zinc-400 hover:text-white">
+          <button
+            onClick={() => setError(null)}
+            className="text-zinc-400 hover:text-white cursor-pointer"
+          >
             Dismiss
           </button>
         </div>
       )}
 
-      {/* Main Workspace Area */}
-      <div className="relative flex-1 w-full h-full overflow-hidden">
+      {/* Main Viewport Area */}
+      <div className="relative flex-1 w-full h-full overflow-hidden bg-workspace">
         {loading && !graphData ? (
-          <div className="flex flex-col items-center justify-center h-full text-center px-4">
-            <div className="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-sky-400 mb-4 shadow-md">
-              <Loader2 className="w-6 h-6 animate-spin" />
+          <div className="flex flex-col items-center justify-center h-full text-center px-4 space-y-4">
+            <div className="w-14 h-14 rounded-2xl bg-panel border border-borderDefault flex items-center justify-center text-accent-indigoLight shadow-glowIndigo">
+              <Loader2 className="w-7 h-7 animate-spin" />
             </div>
-            <h2 className="text-base font-medium text-zinc-200 mb-1">
-              Analyzing Codebase Architecture...
-            </h2>
-            <p className="text-xs text-zinc-500 max-w-sm mb-4 leading-relaxed font-mono">
-              Cloning repository from GitHub, generating AST dependency graph, and extracting syntax-aware code chunks.
-            </p>
+            <div className="space-y-1">
+              <h2 className="text-base font-semibold text-white">
+                Parsing Codebase Architecture...
+              </h2>
+              <p className="text-xs text-zinc-400 max-w-sm leading-relaxed font-mono">
+                Cloning repository, building syntax-aware AST dependency graph, and generating embeddings.
+              </p>
+            </div>
           </div>
         ) : graphData && graphData.nodes.length > 0 ? (
           <ArchitectureMap
@@ -242,24 +248,52 @@ export default function Home() {
             selectedFile={selectedFile}
           />
         ) : (
-          /* Empty / Welcome State */
-          <div className="flex flex-col items-center justify-center h-full text-center px-4">
-            <div className="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-800 flex items-center justify-center text-zinc-400 mb-4 shadow-md">
-              <Layers className="w-6 h-6" />
+          /* Empty / Welcome Hero State */
+          <div className="flex flex-col items-center justify-center h-full text-center px-4 max-w-2xl mx-auto space-y-6">
+            <div className="w-16 h-16 rounded-3xl bg-panel border border-borderDefault flex items-center justify-center text-accent-indigoLight shadow-card">
+              <Layers className="w-8 h-8" />
             </div>
-            <h1 className="text-base font-medium text-zinc-200 mb-1">
-              Visual Architecture Dependency Map
-            </h1>
-            <p className="text-xs text-zinc-500 max-w-sm mb-6 leading-relaxed">
-              Enter any public GitHub repository URL above to clone, parse AST declarations, and
-              render an interactive dependency graph with code citations.
-            </p>
+
+            <div className="space-y-2">
+              <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-white">
+                Developer Intelligence & Architecture Explorer
+              </h1>
+              <p className="text-xs md:text-sm text-zinc-400 leading-relaxed max-w-lg mx-auto">
+                Enter any public GitHub repository URL above to generate an interactive AST dependency graph,
+                trace execution journeys, diagnose stack traces, and chat with exact code line citations.
+              </p>
+            </div>
+
+            {/* Feature Highlights Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full pt-2">
+              <div className="p-3 rounded-xl bg-panel border border-borderSubtle text-left space-y-1 shadow-card">
+                <Network className="w-4 h-4 text-accent-indigoLight" />
+                <div className="text-xs font-semibold text-zinc-200">AST Graph</div>
+                <div className="text-[11px] text-zinc-500">Static dependencies</div>
+              </div>
+              <div className="p-3 rounded-xl bg-panel border border-borderSubtle text-left space-y-1 shadow-card">
+                <Route className="w-4 h-4 text-accent-emerald" />
+                <div className="text-xs font-semibold text-zinc-200">Code Journeys</div>
+                <div className="text-[11px] text-zinc-500">Step-by-step flows</div>
+              </div>
+              <div className="p-3 rounded-xl bg-panel border border-borderSubtle text-left space-y-1 shadow-card">
+                <Bug className="w-4 h-4 text-rose-400" />
+                <div className="text-xs font-semibold text-zinc-200">AI Debugger</div>
+                <div className="text-[11px] text-zinc-500">Stack trace fixes</div>
+              </div>
+              <div className="p-3 rounded-xl bg-panel border border-borderSubtle text-left space-y-1 shadow-card">
+                <MessageSquare className="w-4 h-4 text-accent-sky" />
+                <div className="text-xs font-semibold text-zinc-200">Hybrid RAG</div>
+                <div className="text-[11px] text-zinc-500">Exact line citations</div>
+              </div>
+            </div>
+
             <button
               onClick={() => handleAnalyze()}
-              className="px-4 py-2 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs font-mono text-zinc-200 flex items-center gap-2 transition-colors shadow-sm"
+              className="px-5 py-2.5 rounded-xl bg-accent-indigo hover:bg-accent-indigoLight text-white text-xs font-medium flex items-center gap-2 transition-all shadow-glowIndigo cursor-pointer"
             >
               <span>Analyze Sample Repository</span>
-              <ArrowRight className="w-3.5 h-3.5 text-sky-400" />
+              <ArrowRight className="w-3.5 h-3.5" />
             </button>
           </div>
         )}
@@ -278,9 +312,9 @@ export default function Home() {
 
       {/* Bottom Status & Metrics Bar */}
       {repoData && (
-        <footer className="h-9 border-t border-zinc-800/80 bg-zinc-950 px-4 flex items-center justify-between text-[11px] font-mono text-zinc-400 z-10 shrink-0">
+        <footer className="h-11 border-t border-borderSubtle bg-panel px-6 flex items-center justify-between text-[11px] font-mono text-zinc-400 z-10 shrink-0">
           <div className="flex items-center gap-4">
-            <span className="text-zinc-200 font-medium">{repoData.repo_name}</span>
+            <span className="text-white font-semibold">{repoData.repo_name}</span>
             <span className="text-zinc-600">|</span>
             <span>{repoData.file_count} files</span>
             <span className="text-zinc-600">|</span>
@@ -291,17 +325,17 @@ export default function Home() {
 
           <div className="flex items-center gap-3">
             <span className="flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
               <span className="text-zinc-300 capitalize">{repoData.status}</span>
             </span>
 
             <Link
               href={`/repo/${repoData.repo_id}`}
-              className="px-2.5 py-1 rounded bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 font-medium flex items-center gap-1.5 transition-colors"
+              className="px-3.5 py-1.5 rounded-xl bg-accent-indigo hover:bg-accent-indigoLight text-white font-medium flex items-center gap-1.5 transition-all shadow-glowIndigo cursor-pointer"
             >
-              <MessageSquare className="w-3 h-3" />
-              <span>Open AI Workspace</span>
-              <ArrowRight className="w-3 h-3" />
+              <Compass className="w-3.5 h-3.5" />
+              <span>Enter Workspace</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
         </footer>
@@ -309,4 +343,3 @@ export default function Home() {
     </main>
   );
 }
-

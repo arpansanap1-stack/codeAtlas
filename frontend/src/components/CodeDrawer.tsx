@@ -121,8 +121,8 @@ export function CodeDrawer({
           range: new monaco.Range(start, 1, end, 1),
           options: {
             isWholeLine: true,
-            className: "bg-sky-500/20 border-l-2 border-sky-400",
-            marginClassName: "bg-sky-500/30",
+            className: "bg-indigo-500/20 border-l-2 border-indigo-400",
+            marginClassName: "bg-indigo-500/30",
           },
         },
       ]);
@@ -167,11 +167,11 @@ export function CodeDrawer({
   if (!filePath) return null;
 
   return (
-    <div className="fixed inset-y-0 right-0 z-40 w-full sm:w-[620px] md:w-[700px] lg:w-[800px] bg-zinc-950/95 backdrop-blur-xl border-l border-zinc-800 shadow-2xl flex flex-col transition-all duration-300">
+    <div className="fixed inset-y-0 right-0 z-40 w-full sm:w-[620px] md:w-[700px] lg:w-[800px] bg-panel/98 backdrop-blur-2xl border-l border-borderDefault shadow-elevated flex flex-col transition-all duration-300 animate-slide-up">
       {/* Drawer Header */}
-      <div className="p-4 border-b border-zinc-800/80 flex items-center justify-between gap-3 bg-zinc-900/60">
+      <div className="p-4 border-b border-borderSubtle flex items-center justify-between gap-3 bg-surface/80">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="text-xs font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700/60">
+          <span className="text-xs font-mono px-2 py-0.5 rounded-md bg-surfaceElevated text-zinc-300 border border-borderSubtle">
             {getLanguageFromPath(filePath).toUpperCase()}
           </span>
           <h2
@@ -181,7 +181,7 @@ export function CodeDrawer({
             {filePath}
           </h2>
           {targetLineRange && (
-            <span className="text-xs font-mono text-sky-400 bg-sky-500/10 px-1.5 py-0.5 rounded border border-sky-500/20 shrink-0">
+            <span className="text-xs font-mono text-accent-indigoLight bg-accent-indigo/10 px-2 py-0.5 rounded-md border border-accent-indigo/25 shrink-0 shadow-sm">
               Lines {targetLineRange[0]}-{targetLineRange[1]}
             </span>
           )}
@@ -191,14 +191,14 @@ export function CodeDrawer({
           {onToggleChatContext && filePath && (
             <button
               onClick={() => onToggleChatContext(filePath)}
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded border text-[11px] font-mono transition-colors ${
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border text-[11px] font-mono transition-colors cursor-pointer ${
                 isInChatContext
-                  ? "bg-sky-500/20 text-sky-300 border-sky-500/40"
-                  : "bg-zinc-900 hover:bg-zinc-800 text-zinc-300 border-zinc-700"
+                  ? "bg-accent-indigo/20 text-accent-indigoLight border-accent-indigo/40"
+                  : "bg-surface hover:bg-surfaceHover text-zinc-300 border-borderSubtle"
               }`}
               title={isInChatContext ? "Remove from AI Chat context" : "Add to AI Chat targeted context"}
             >
-              <MessageSquareCode className="w-3.5 h-3.5 text-sky-400" />
+              <MessageSquareCode className="w-3.5 h-3.5 text-accent-indigoLight" />
               <span>{isInChatContext ? "Pinned to Chat" : "Pin to Chat"}</span>
             </button>
           )}
@@ -206,7 +206,7 @@ export function CodeDrawer({
           {onOpenGitHistory && filePath && (
             <button
               onClick={() => onOpenGitHistory(filePath)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 text-[11px] font-mono transition-colors"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-surface hover:bg-surfaceHover text-accent-sky border border-borderSubtle text-[11px] font-mono transition-colors cursor-pointer"
               title="View Git Authorship & Evolution History"
             >
               <History className="w-3.5 h-3.5" />
@@ -217,7 +217,7 @@ export function CodeDrawer({
           {onOpenImpactAnalysis && filePath && (
             <button
               onClick={() => onOpenImpactAnalysis(filePath)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[11px] font-mono transition-colors"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[11px] font-mono transition-colors cursor-pointer"
               title="Run 'What Happens If I Change This?' Impact Analysis"
             >
               <AlertOctagon className="w-3.5 h-3.5" />
@@ -227,7 +227,7 @@ export function CodeDrawer({
 
           <button
             onClick={handleCopy}
-            className="p-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-surfaceHover transition-colors cursor-pointer"
             title="Copy file contents"
           >
             {copied ? (
@@ -238,7 +238,7 @@ export function CodeDrawer({
           </button>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-surfaceHover transition-colors cursor-pointer"
             title="Close drawer (Esc)"
           >
             <X className="w-4 h-4" />

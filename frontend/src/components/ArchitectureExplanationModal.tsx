@@ -52,7 +52,7 @@ function renderWithCitations(
       <button
         key={`${filePath}-${startLine}-${matchIndex}`}
         onClick={() => onSelect(filePath, startLine, endLine)}
-        className="inline-flex items-center gap-1 px-1.5 py-0.5 mx-1 rounded bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 text-[11px] font-mono transition-colors group align-baseline"
+        className="inline-flex items-center gap-1 px-1.5 py-0.5 mx-1 rounded-md bg-accent-indigo/10 hover:bg-accent-indigo/25 text-accent-indigoLight border border-accent-indigo/30 text-[11px] font-mono transition-colors group align-baseline cursor-pointer"
         title={`View ${filePath} (Lines ${startLine}-${endLine})`}
       >
         <FileCode className="w-3 h-3 group-hover:scale-110 transition-transform" />
@@ -121,18 +121,18 @@ export function ArchitectureExplanationModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-4xl h-[88vh] bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl flex flex-col overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/70 backdrop-blur-md animate-fade-in">
+      <div className="relative w-full max-w-4xl h-[88vh] bg-panel border border-borderDefault rounded-2xl shadow-elevated flex flex-col overflow-hidden animate-scale-in">
         {/* Modal Header */}
-        <div className="h-16 px-6 border-b border-zinc-800/80 bg-zinc-900/60 flex items-center justify-between gap-4 shrink-0">
+        <div className="h-16 px-6 border-b border-borderSubtle bg-surface/80 flex items-center justify-between gap-4 shrink-0">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400">
+            <div className="w-8 h-8 rounded-xl bg-accent-indigo/15 border border-accent-indigo/30 flex items-center justify-center text-accent-indigoLight">
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
               <h2 className="text-sm font-semibold text-zinc-100 flex items-center gap-2">
                 <span>AI Architecture Explanation</span>
-                <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-800 text-zinc-400 border border-zinc-700/60 font-mono">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-surfaceElevated text-zinc-400 border border-borderSubtle font-mono">
                   {repoName}
                 </span>
               </h2>
@@ -143,12 +143,12 @@ export function ArchitectureExplanationModal({
           </div>
 
           {/* Depth / Audience Level Selector */}
-          <div className="flex items-center gap-1 bg-zinc-950 p-1 rounded-lg border border-zinc-800 text-xs font-mono">
+          <div className="flex items-center gap-1 bg-panel p-1 rounded-xl border border-borderSubtle text-xs font-mono">
             <button
               onClick={() => setLevel("beginner")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                 level === "beginner"
-                  ? "bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-sm"
+                  ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 shadow-sm"
                   : "text-zinc-400 hover:text-zinc-200"
               }`}
               title="Beginner: Mental models, analogies, entry points, zero jargon"
@@ -159,9 +159,9 @@ export function ArchitectureExplanationModal({
 
             <button
               onClick={() => setLevel("intermediate")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                 level === "intermediate"
-                  ? "bg-sky-500/15 text-sky-400 border border-sky-500/30 shadow-sm"
+                  ? "bg-accent-indigo/20 text-accent-indigoLight border border-accent-indigo/35 shadow-sm"
                   : "text-zinc-400 hover:text-zinc-200"
               }`}
               title="Intermediate: Architecture patterns, request lifecycles, and component interactions"
@@ -172,9 +172,9 @@ export function ArchitectureExplanationModal({
 
             <button
               onClick={() => setLevel("expert")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md transition-all ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
                 level === "expert"
-                  ? "bg-purple-500/15 text-purple-400 border border-purple-500/30 shadow-sm"
+                  ? "bg-purple-500/15 text-purple-300 border border-purple-500/30 shadow-sm"
                   : "text-zinc-400 hover:text-zinc-200"
               }`}
               title="Expert: Concurrency, scalability, dependency boundaries, design trade-offs"
@@ -189,7 +189,7 @@ export function ArchitectureExplanationModal({
             <button
               onClick={handleCopy}
               disabled={loading || !content}
-              className="px-2.5 py-1.5 rounded-md bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-300 hover:text-white flex items-center gap-1.5 transition-colors disabled:opacity-50"
+              className="px-3 py-1.5 rounded-lg bg-surface hover:bg-surfaceHover border border-borderSubtle text-xs text-zinc-300 hover:text-white flex items-center gap-1.5 transition-colors disabled:opacity-50 cursor-pointer"
               title="Copy Markdown"
             >
               {copied ? (
@@ -207,7 +207,7 @@ export function ArchitectureExplanationModal({
 
             <button
               onClick={onClose}
-              className="p-1.5 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-800/80 transition-colors"
+              className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-surfaceHover transition-colors cursor-pointer"
               title="Close Modal"
             >
               <X className="w-5 h-5" />
@@ -216,7 +216,7 @@ export function ArchitectureExplanationModal({
         </div>
 
         {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6">
+        <div className="flex-1 overflow-y-auto p-6 sm:p-8 space-y-6 bg-workspace">
           {loading ? (
             <div className="h-64 flex flex-col items-center justify-center gap-3 text-zinc-400 font-mono text-xs">
               <Loader2 className="w-6 h-6 animate-spin text-sky-400" />

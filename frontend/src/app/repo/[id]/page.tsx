@@ -10,6 +10,8 @@ import {
   MessageSquare,
   PanelRightClose,
   PanelRightOpen,
+  PanelLeftClose,
+  PanelLeftOpen,
   Loader2,
   ExternalLink,
   Sparkles,
@@ -19,6 +21,11 @@ import {
   Activity,
   History,
   Camera,
+  Search,
+  FileCode,
+  GitBranch,
+  Layers,
+  CheckCircle2,
 } from "lucide-react";
 import { ArchitectureMap } from "@/components/ArchitectureMap";
 import { OnboardingView } from "@/components/OnboardingView";
@@ -31,6 +38,8 @@ import { ImpactModal } from "@/components/ImpactModal";
 import { HealthDashboardModal } from "@/components/HealthDashboardModal";
 import { GitHistoryModal } from "@/components/GitHistoryModal";
 import { ExportSnapshotModal } from "@/components/ExportSnapshotModal";
+import { CommandPalette } from "@/components/CommandPalette";
+import { RepoOverviewView } from "@/components/RepoOverviewView";
 import GeminiKeyModal from "@/components/GeminiKeyModal";
 import { getRepository, getRepositoryGraph } from "@/lib/api";
 import { GraphData, JourneyResponse, RepoIngestResponse } from "@/types";
@@ -39,12 +48,16 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+type WorkspaceTab = "overview" | "map" | "docs";
+
 export default function RepoWorkspace({ params }: PageProps) {
   const resolvedParams = use(params);
   const repoId = resolvedParams.id;
 
-  const [activeTab, setActiveTab] = useState<"map" | "docs">("map");
+  const [activeTab, setActiveTab] = useState<WorkspaceTab>("overview");
   const [showRightPanel, setShowRightPanel] = useState(true);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
 
   const [repo, setRepo] = useState<RepoIngestResponse | null>(null);
   const [graphData, setGraphData] = useState<GraphData | null>(null);
@@ -55,26 +68,38 @@ export default function RepoWorkspace({ params }: PageProps) {
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [targetLineRange, setTargetLineRange] = useState<[number, number] | null>(null);
 
-  // New Features: Architecture Explanation & Codebase Journey State
+  // Architecture Explanation & Codebase Journey State
   const [isExplainModalOpen, setIsExplainModalOpen] = useState(false);
   const [isJourneyPlayerOpen, setIsJourneyPlayerOpen] = useState(false);
   const [activeJourney, setActiveJourney] = useState<JourneyResponse | null>(null);
   const [currentJourneyStepIndex, setCurrentJourneyStepIndex] = useState(0);
 
-  // New Features: AI Debugger & Impact Analysis State
+  // AI Debugger & Impact Analysis State
   const [isDebugModalOpen, setIsDebugModalOpen] = useState(false);
   const [isImpactModalOpen, setIsImpactModalOpen] = useState(false);
   const [impactTargetFile, setImpactTargetFile] = useState<string>("");
   const [impactAffectedNodes, setImpactAffectedNodes] = useState<string[] | null>(null);
 
-  // New Features: Codebase Health & Smell Detection State
+  // Codebase Health & Smell Detection State
   const [isHealthModalOpen, setIsHealthModalOpen] = useState(false);
 
-  // New Features: Git History Intelligence, Targeted Chat Context, and Architecture Snapshots
+  // Git History Intelligence & Targeted Chat Context
   const [selectedChatFiles, setSelectedChatFiles] = useState<string[]>([]);
   const [isGitHistoryModalOpen, setIsGitHistoryModalOpen] = useState(false);
   const [gitHistoryTargetFile, setGitHistoryTargetFile] = useState<string>("");
   const [isSnapshotModalOpen, setIsSnapshotModalOpen] = useState(false);
+
+  // Global Ctrl+K / Cmd+K Command Palette shortcut
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsCommandPaletteOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const handleToggleChatContext = (filePath: string) => {
     setSelectedChatFiles((prev) =>
@@ -126,22 +151,69 @@ export default function RepoWorkspace({ params }: PageProps) {
     setTargetLineRange(null);
   };
 
+  const handleOpenModal = (
+    modal:
+      | "explain"
+      | "journey"
+      | "debug"
+      | "impact"
+      | "health"
+      | "history"
+      | "snapshot"
+      | "gemini"
+  ) => {
+    switch (modal) {
+      case "explain":
+        setIsExplainModalOpen(true);
+        break;
+      case "journey":
+        setActiveTab("map");
+        setIsJourneyPlayerOpen(true);
+        break;
+      case "debug":
+        setIsDebugModalOpen(true);
+        break;
+      case "impact":
+        const target = selectedFile || (graphData?.nodes[0]?.id ?? "");
+        setImpactTargetFile(target);
+        setIsImpactModalOpen(true);
+        break;
+      case "health":
+        setIsHealthModalOpen(true);
+        break;
+      case "history":
+        const file = selectedFile || (graphData?.nodes[0]?.id ?? "");
+        handleOpenGitHistory(file);
+        break;
+      case "snapshot":
+        setIsSnapshotModalOpen(true);
+        break;
+      default:
+        break;
+    }
+  };
+
   if (loading) {
     return (
-      <div className="h-screen w-screen bg-zinc-950 flex flex-col items-center justify-center gap-3 text-zinc-400 font-mono text-xs">
-        <Loader2 className="w-6 h-6 animate-spin text-sky-400" />
-        <span>Loading repository workspace...</span>
+      <div className="h-screen w-screen bg-workspace flex flex-col items-center justify-center gap-4 text-zinc-400 font-mono text-xs">
+        <div className="w-12 h-12 rounded-2xl bg-panel border border-borderDefault flex items-center justify-center text-accent-indigoLight shadow-glowIndigo">
+          <Loader2 className="w-6 h-6 animate-spin" />
+        </div>
+        <div className="space-y-1 text-center">
+          <p className="text-zinc-200 font-medium">Loading Developer Workspace...</p>
+          <p className="text-zinc-500 text-[11px]">Connecting AST graph, pgvector indices, and citations</p>
+        </div>
       </div>
     );
   }
 
   if (error || !repo || !graphData) {
     return (
-      <div className="h-screen w-screen bg-zinc-950 flex flex-col items-center justify-center gap-4 text-center px-4">
+      <div className="h-screen w-screen bg-workspace flex flex-col items-center justify-center gap-4 text-center px-4">
         <div className="text-rose-400 font-mono text-xs">{error || "Repository not found"}</div>
         <Link
           href="/"
-          className="px-3 py-1.5 rounded-md bg-zinc-900 border border-zinc-800 text-xs font-mono text-zinc-300 hover:text-white"
+          className="px-4 py-2 rounded-xl bg-panel border border-borderDefault text-xs font-mono text-zinc-300 hover:text-white transition-colors"
         >
           ← Return to Dashboard
         </Link>
@@ -150,175 +222,79 @@ export default function RepoWorkspace({ params }: PageProps) {
   }
 
   return (
-    <div className="flex flex-col h-screen w-screen overflow-hidden bg-zinc-950 text-zinc-100">
-      {/* Workspace Header */}
-      <header className="h-12 border-b border-zinc-800/80 bg-zinc-950/90 backdrop-blur-md px-4 flex items-center justify-between gap-4 z-20 shrink-0">
-        {/* Left: Back & Repo Title */}
+    <div className="flex flex-col h-screen w-screen overflow-hidden bg-workspace text-zinc-100 font-sans">
+      {/* ========================================================================= */}
+      {/* 5.A: TOP NAVIGATION (Linear / VS Code inspired) */}
+      {/* ========================================================================= */}
+      <header className="h-13 border-b border-borderSubtle bg-panel/90 backdrop-blur-xl px-4 flex items-center justify-between gap-4 z-20 shrink-0">
+        {/* Left: Brand, Back, Repo Breadcrumb & Branch */}
         <div className="flex items-center gap-3 min-w-0">
           <Link
             href="/"
-            className="p-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-900 transition-colors"
-            title="Back to Home"
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-white hover:bg-surfaceHover transition-colors cursor-pointer"
+            title="Return to Home"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
 
           <div className="flex items-center gap-2 truncate">
-            <div className="w-6 h-6 rounded bg-zinc-900 border border-zinc-800 flex items-center justify-center text-sky-400 shrink-0">
+            <div className="w-6 h-6 rounded-lg bg-surface border border-borderSubtle flex items-center justify-center text-accent-indigoLight shrink-0">
               <Compass className="w-3.5 h-3.5" />
             </div>
-            <span className="font-semibold text-xs tracking-tight text-zinc-100 truncate">
-              {repo.repo_name}
-            </span>
+
+            <div className="flex items-center gap-1.5 text-xs font-mono min-w-0">
+              <span className="font-semibold text-zinc-100 truncate">
+                {repo.repo_name}
+              </span>
+              <span className="text-zinc-600">/</span>
+              <span className="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full bg-surface border border-borderSubtle text-zinc-400">
+                <GitBranch className="w-2.5 h-2.5 text-accent-emerald" />
+                <span>main</span>
+              </span>
+            </div>
           </div>
         </div>
 
-        {/* Center: Stage Switcher Tabs & Feature Triggers */}
-        <div className="flex items-center gap-2">
-          <div className="flex items-center gap-1 bg-zinc-900/90 p-1 rounded-lg border border-zinc-800 text-xs font-mono">
-            <button
-              onClick={() => setActiveTab("map")}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-md transition-all ${
-                activeTab === "map"
-                  ? "bg-zinc-800 text-sky-400 shadow-sm"
-                  : "text-zinc-400 hover:text-zinc-200"
-              }`}
-            >
-              <Network className="w-3.5 h-3.5" />
-              <span>Architecture Map</span>
-            </button>
-
-            <button
-              onClick={() => setActiveTab("docs")}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-md transition-all ${
-                activeTab === "docs"
-                  ? "bg-zinc-800 text-sky-400 shadow-sm"
-                  : "text-zinc-400 hover:text-zinc-200"
-              }`}
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>Onboarding Guide</span>
-            </button>
-          </div>
-
-          {/* AI Architecture Explanation Button */}
+        {/* Center: Command Palette Trigger (Raycast style) */}
+        <div className="flex-1 max-w-md hidden md:flex items-center justify-center">
           <button
-            onClick={() => setIsExplainModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-850 border border-zinc-800 text-xs font-mono text-zinc-300 hover:text-white transition-all shadow-sm group"
-            title="Explain this architecture to me (Beginner / Intermediate / Expert)"
+            onClick={() => setIsCommandPaletteOpen(true)}
+            className="w-full h-8 px-3 rounded-lg bg-surface hover:bg-surfaceHover border border-borderSubtle text-xs text-zinc-400 hover:text-zinc-200 flex items-center justify-between gap-2 transition-all cursor-pointer group"
           >
-            <Sparkles className="w-3.5 h-3.5 text-sky-400 group-hover:scale-110 transition-transform" />
-            <span className="hidden sm:inline">Explain Architecture</span>
+            <div className="flex items-center gap-2 text-zinc-400 group-hover:text-zinc-200">
+              <Search className="w-3.5 h-3.5" />
+              <span className="font-sans text-[11px]">Search commands, features, files...</span>
+            </div>
+            <kbd className="px-1.5 py-0.5 text-[10px] font-mono text-zinc-500 bg-surfaceElevated border border-borderSubtle rounded">
+              ⌘K
+            </kbd>
           </button>
+        </div>
 
-          {/* Interactive Codebase Journeys Button */}
-          <button
-            onClick={() => {
-              setActiveTab("map");
-              setIsJourneyPlayerOpen(true);
-            }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-mono transition-all shadow-sm group ${
-              activeJourney
-                ? "bg-sky-500/15 border-sky-500/40 text-sky-400 font-semibold"
-                : "bg-zinc-900/90 hover:bg-zinc-850 border-zinc-800 text-zinc-300 hover:text-white"
-            }`}
-            title="Journey through the codebase (Step-by-step interactive flows)"
-          >
-            <Route className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
-            <span className="hidden sm:inline">
-              {activeJourney ? "Active Journey" : "Code Journeys"}
-            </span>
-          </button>
-
-          {/* AI Debugger Button */}
-          <button
-            onClick={() => setIsDebugModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-850 border border-zinc-800 text-xs font-mono text-zinc-300 hover:text-white transition-all shadow-sm group"
-            title="Paste an error or stack trace to diagnose root cause and get fixes"
-          >
-            <Bug className="w-3.5 h-3.5 text-rose-400 group-hover:scale-110 transition-transform" />
-            <span className="hidden sm:inline">AI Debugger</span>
-          </button>
-
-          {/* Impact Analysis Button */}
-          <button
-            onClick={() => {
-              const fileToTest = selectedFile || (graphData.nodes[0]?.id ?? "");
-              setImpactTargetFile(fileToTest);
-              setIsImpactModalOpen(true);
-            }}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-mono transition-all shadow-sm group ${
-              impactAffectedNodes
-                ? "bg-amber-500/15 border-amber-500/40 text-amber-400 font-semibold"
-                : "bg-zinc-900/90 hover:bg-zinc-850 border-zinc-800 text-zinc-300 hover:text-white"
-            }`}
-            title="What happens if I change this? (Blast radius & downstream callers)"
-          >
-            <AlertOctagon className="w-3.5 h-3.5 text-amber-400 group-hover:scale-110 transition-transform" />
-            <span className="hidden sm:inline">
-              {impactAffectedNodes ? `Blast Radius: ${impactAffectedNodes.length}` : "Impact Analysis"}
-            </span>
-          </button>
-
-          {/* Codebase Health & Smell Detection Button */}
-          <button
-            onClick={() => setIsHealthModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-850 border border-zinc-800 text-xs font-mono text-zinc-300 hover:text-white transition-all shadow-sm group"
-            title="Codebase Health Dashboard & Architecture Smell Detection (Cycles, God files, Dead code, Hotspots)"
-          >
-            <Activity className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
-            <span className="hidden sm:inline">Health & Smells</span>
-          </button>
-
-          {/* Git History Intelligence Button */}
-          <button
-            onClick={() => {
-              const fileToInspect = selectedFile || (graphData.nodes[0]?.id ?? "");
-              handleOpenGitHistory(fileToInspect);
-            }}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-850 border border-zinc-800 text-xs font-mono text-zinc-300 hover:text-white transition-all shadow-sm group"
-            title="Git History Intelligence: Authors, commit frequency, temporal co-change, and evolution timeline"
-          >
-            <History className="w-3.5 h-3.5 text-sky-400 group-hover:scale-110 transition-transform" />
-            <span className="hidden sm:inline">Git History</span>
-          </button>
-
-          {/* Architecture Snapshots & Export Button */}
+        {/* Right: Feature Triggers, Gemini Status & Chat Drawer Toggle */}
+        <div className="flex items-center gap-2 shrink-0">
+          {/* Quick Snapshot Trigger */}
           <button
             onClick={() => setIsSnapshotModalOpen(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-850 border border-zinc-800 text-xs font-mono text-zinc-300 hover:text-white transition-all shadow-sm group"
-            title="Export architecture snapshots: SVG/PNG canvas diagrams, Mermaid Markdown reports"
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-surface hover:bg-surfaceHover border border-borderSubtle text-xs font-mono text-zinc-300 hover:text-white transition-colors cursor-pointer"
+            title="Export architecture snapshot diagram or markdown report"
           >
-            <Camera className="w-3.5 h-3.5 text-purple-400 group-hover:scale-110 transition-transform" />
-            <span className="hidden sm:inline">Snapshots</span>
+            <Camera className="w-3.5 h-3.5 text-purple-400" />
+            <span className="hidden lg:inline text-[11px]">Snapshot</span>
           </button>
 
-          {/* Clear Blast Radius Filter if active */}
-          {impactAffectedNodes && (
-            <button
-              onClick={() => {
-                setImpactAffectedNodes(null);
-                setImpactTargetFile("");
-              }}
-              className="px-2 py-1 rounded bg-zinc-800 hover:bg-zinc-700 text-[10px] font-mono text-zinc-300 transition-colors"
-              title="Reset blast radius filter"
-            >
-              Clear Filter
-            </button>
-          )}
-        </div>
-
-        {/* Right: Toggle Chat Panel & Gemini Status */}
-        <div className="flex items-center gap-2">
+          {/* Gemini AI Status Badge */}
           <GeminiKeyModal />
+
+          {/* Right Panel Toggle (Chat) */}
           <button
             onClick={() => setShowRightPanel((prev) => !prev)}
-            className={`p-1.5 rounded-md border text-xs transition-colors flex items-center gap-1.5 ${
+            className={`p-1.5 rounded-lg border text-xs transition-colors flex items-center gap-1.5 cursor-pointer ${
               showRightPanel
-                ? "bg-zinc-800 border-zinc-700 text-sky-400"
-                : "bg-zinc-900 border-zinc-800 text-zinc-400 hover:text-white"
+                ? "bg-accent-indigo/15 border-accent-indigo/35 text-accent-indigoLight shadow-sm"
+                : "bg-surface border-borderSubtle text-zinc-400 hover:text-white hover:bg-surfaceHover"
             }`}
-            title={showRightPanel ? "Collapse Chat Panel" : "Expand Chat Panel"}
+            title={showRightPanel ? "Collapse AI Chat Assistant" : "Expand AI Chat Assistant"}
           >
             {showRightPanel ? (
               <PanelRightClose className="w-4 h-4" />
@@ -329,11 +305,279 @@ export default function RepoWorkspace({ params }: PageProps) {
         </div>
       </header>
 
-      {/* Main Split-Pane Workspace */}
+      {/* ========================================================================= */}
+      {/* MAIN WORKSPACE BODY: LEFT SIDEBAR + ADAPTIVE STAGE + RIGHT PANEL */}
+      {/* ========================================================================= */}
       <div className="relative flex-1 flex w-full h-full overflow-hidden">
-        {/* Left / Center Main Stage */}
-        <div className="flex-1 h-full relative overflow-hidden">
-          {activeTab === "map" ? (
+        {/* ========================================================================= */}
+        {/* 5.B: COLLAPSIBLE LEFT SIDEBAR */}
+        {/* ========================================================================= */}
+        <aside
+          className={`h-full border-r border-borderSubtle bg-panel flex flex-col justify-between transition-all duration-300 select-none shrink-0 z-10 ${
+            isSidebarCollapsed ? "w-14" : "w-56"
+          }`}
+        >
+          {/* Sidebar Navigation Items */}
+          <div className="p-2 space-y-4 overflow-y-auto">
+            {/* Group 1: OVERVIEW */}
+            <div className="space-y-1">
+              {!isSidebarCollapsed && (
+                <div className="px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
+                  Overview
+                </div>
+              )}
+              <button
+                onClick={() => setActiveTab("overview")}
+                className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer group ${
+                  activeTab === "overview"
+                    ? "bg-accent-indigo/15 text-white font-semibold"
+                    : "text-zinc-400 hover:text-zinc-200 hover:bg-surfaceHover"
+                }`}
+                title="Repository Overview"
+              >
+                <Compass
+                  className={`w-4 h-4 shrink-0 transition-colors ${
+                    activeTab === "overview"
+                      ? "text-accent-indigoLight"
+                      : "text-zinc-400 group-hover:text-zinc-200"
+                  }`}
+                />
+                {!isSidebarCollapsed && <span className="truncate">Repository Overview</span>}
+              </button>
+            </div>
+
+            {/* Group 2: EXPLORE */}
+            <div className="space-y-1">
+              {!isSidebarCollapsed && (
+                <div className="px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
+                  Explore
+                </div>
+              )}
+
+              {/* Architecture Explorer */}
+              <button
+                onClick={() => setActiveTab("map")}
+                className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer group ${
+                  activeTab === "map"
+                    ? "bg-accent-indigo/15 text-white font-semibold"
+                    : "text-zinc-400 hover:text-zinc-200 hover:bg-surfaceHover"
+                }`}
+                title="Architecture Explorer"
+              >
+                <Network
+                  className={`w-4 h-4 shrink-0 transition-colors ${
+                    activeTab === "map"
+                      ? "text-accent-indigoLight"
+                      : "text-zinc-400 group-hover:text-zinc-200"
+                  }`}
+                />
+                {!isSidebarCollapsed && <span className="truncate">Architecture Map</span>}
+              </button>
+
+              {/* Code Explorer (Monaco) */}
+              <button
+                onClick={() => {
+                  const target = selectedFile || (graphData.nodes[0]?.id ?? null);
+                  setSelectedFile(target);
+                }}
+                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-surfaceHover transition-colors cursor-pointer group"
+                title="Inspect source code in Monaco Editor"
+              >
+                <FileCode className="w-4 h-4 shrink-0 text-zinc-400 group-hover:text-zinc-200" />
+                {!isSidebarCollapsed && <span className="truncate">Code Inspector</span>}
+              </button>
+
+              {/* Code Journeys */}
+              <button
+                onClick={() => {
+                  setActiveTab("map");
+                  setIsJourneyPlayerOpen(true);
+                }}
+                className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer group ${
+                  activeJourney
+                    ? "bg-emerald-500/15 text-emerald-300 font-semibold"
+                    : "text-zinc-400 hover:text-zinc-200 hover:bg-surfaceHover"
+                }`}
+                title="Code Journeys (Execution Path Tracer)"
+              >
+                <Route className="w-4 h-4 shrink-0 text-emerald-400 group-hover:scale-110 transition-transform" />
+                {!isSidebarCollapsed && (
+                  <span className="truncate">
+                    {activeJourney ? "Active Journey" : "Code Journeys"}
+                  </span>
+                )}
+              </button>
+            </div>
+
+            {/* Group 3: INTELLIGENCE */}
+            <div className="space-y-1">
+              {!isSidebarCollapsed && (
+                <div className="px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
+                  Intelligence
+                </div>
+              )}
+
+              {/* AI Chat Drawer Trigger */}
+              <button
+                onClick={() => setShowRightPanel(true)}
+                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-surfaceHover transition-colors cursor-pointer group"
+                title="Open AI RAG Chat Assistant"
+              >
+                <MessageSquare className="w-4 h-4 shrink-0 text-accent-sky" />
+                {!isSidebarCollapsed && <span className="truncate">AI Assistant</span>}
+              </button>
+
+              {/* Impact Analysis */}
+              <button
+                onClick={() => {
+                  const fileToTest = selectedFile || (graphData.nodes[0]?.id ?? "");
+                  setImpactTargetFile(fileToTest);
+                  setIsImpactModalOpen(true);
+                }}
+                className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer group ${
+                  impactAffectedNodes
+                    ? "bg-amber-500/15 text-amber-300 font-semibold"
+                    : "text-zinc-400 hover:text-zinc-200 hover:bg-surfaceHover"
+                }`}
+                title="Impact Analysis (What Happens If I Change This?)"
+              >
+                <AlertOctagon className="w-4 h-4 shrink-0 text-amber-400" />
+                {!isSidebarCollapsed && (
+                  <span className="truncate">
+                    {impactAffectedNodes
+                      ? `Blast Radius: ${impactAffectedNodes.length}`
+                      : "Impact Analysis"}
+                  </span>
+                )}
+              </button>
+
+              {/* Codebase Health & Smells */}
+              <button
+                onClick={() => setIsHealthModalOpen(true)}
+                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-surfaceHover transition-colors cursor-pointer group"
+                title="Codebase Health & Architecture Smells"
+              >
+                <Activity className="w-4 h-4 shrink-0 text-emerald-400" />
+                {!isSidebarCollapsed && <span className="truncate">Health & Smells</span>}
+              </button>
+
+              {/* AI Debugger */}
+              <button
+                onClick={() => setIsDebugModalOpen(true)}
+                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-surfaceHover transition-colors cursor-pointer group"
+                title="AI Error Explorer & Stack Trace Diagnosis"
+              >
+                <Bug className="w-4 h-4 shrink-0 text-rose-400" />
+                {!isSidebarCollapsed && <span className="truncate">AI Debugger</span>}
+              </button>
+
+              {/* Git History Intelligence */}
+              <button
+                onClick={() => {
+                  const fileToInspect = selectedFile || (graphData.nodes[0]?.id ?? "");
+                  handleOpenGitHistory(fileToInspect);
+                }}
+                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-surfaceHover transition-colors cursor-pointer group"
+                title="Git History Authorship & Evolution Intelligence"
+              >
+                <History className="w-4 h-4 shrink-0 text-accent-sky" />
+                {!isSidebarCollapsed && <span className="truncate">Git Evolution</span>}
+              </button>
+
+              {/* Multi-Level Architecture Explanation */}
+              <button
+                onClick={() => setIsExplainModalOpen(true)}
+                className="w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-surfaceHover transition-colors cursor-pointer group"
+                title="Explain architecture (Beginner, Intermediate, Expert)"
+              >
+                <Sparkles className="w-4 h-4 shrink-0 text-accent-indigoLight" />
+                {!isSidebarCollapsed && <span className="truncate">Explain Architecture</span>}
+              </button>
+            </div>
+
+            {/* Group 4: DOCUMENTATION */}
+            <div className="space-y-1">
+              {!isSidebarCollapsed && (
+                <div className="px-2.5 py-1 text-[10px] font-mono uppercase tracking-wider text-zinc-500 font-semibold">
+                  Documentation
+                </div>
+              )}
+
+              <button
+                onClick={() => setActiveTab("docs")}
+                className={`w-full flex items-center gap-2.5 px-2.5 py-2 rounded-lg text-xs font-medium transition-colors cursor-pointer group ${
+                  activeTab === "docs"
+                    ? "bg-accent-indigo/15 text-white font-semibold"
+                    : "text-zinc-400 hover:text-zinc-200 hover:bg-surfaceHover"
+                }`}
+                title="Onboarding Documentation"
+              >
+                <BookOpen
+                  className={`w-4 h-4 shrink-0 transition-colors ${
+                    activeTab === "docs"
+                      ? "text-accent-indigoLight"
+                      : "text-zinc-400 group-hover:text-zinc-200"
+                  }`}
+                />
+                {!isSidebarCollapsed && <span className="truncate">Onboarding Guide</span>}
+              </button>
+            </div>
+          </div>
+
+          {/* Sidebar Footer: Collapse Toggle & Repo Statistics */}
+          <div className="p-2 border-t border-borderSubtle bg-panel/60">
+            {!isSidebarCollapsed && (
+              <div className="px-2.5 py-1.5 mb-1.5 rounded-lg bg-surface/80 border border-borderSubtle text-[10px] font-mono text-zinc-400 space-y-0.5">
+                <div className="flex items-center justify-between">
+                  <span>Modules</span>
+                  <span className="text-zinc-200 font-semibold">{repo.file_count}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span>Edges</span>
+                  <span className="text-zinc-200 font-semibold">{graphData.edges.length}</span>
+                </div>
+              </div>
+            )}
+
+            <button
+              onClick={() => setIsSidebarCollapsed((prev) => !prev)}
+              className="w-full flex items-center justify-center p-2 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-surfaceHover transition-colors cursor-pointer"
+              title={isSidebarCollapsed ? "Expand Sidebar" : "Collapse Sidebar"}
+            >
+              {isSidebarCollapsed ? (
+                <PanelLeftOpen className="w-4 h-4" />
+              ) : (
+                <div className="flex items-center gap-2 text-xs">
+                  <PanelLeftClose className="w-4 h-4" />
+                  <span>Collapse</span>
+                </div>
+              )}
+            </button>
+          </div>
+        </aside>
+
+        {/* ========================================================================= */}
+        {/* 5.C: MAIN ADAPTIVE WORKSPACE STAGE */}
+        {/* ========================================================================= */}
+        <div className="flex-1 h-full relative overflow-hidden bg-workspace">
+          {activeTab === "overview" ? (
+            <RepoOverviewView
+              repo={repo}
+              graphData={graphData}
+              onNavigateTab={(tab) => {
+                if (tab === "chat") {
+                  setShowRightPanel(true);
+                } else if (tab === "map" || tab === "docs" || tab === "overview") {
+                  setActiveTab(tab);
+                }
+              }}
+              onOpenModal={handleOpenModal}
+              onSelectFile={(f) => {
+                setSelectedFile(f);
+                setTargetLineRange(null);
+              }}
+            />
+          ) : activeTab === "map" ? (
             <ArchitectureMap
               graphData={graphData}
               onSelectFile={handleSelectNode}
@@ -351,7 +595,7 @@ export default function RepoWorkspace({ params }: PageProps) {
             />
           )}
 
-          {/* Interactive Code Journey Player / Dock */}
+          {/* Interactive Code Journey Player / Floating Dock */}
           <JourneyPlayer
             repoId={repoId}
             repoName={repo.repo_name}
@@ -365,7 +609,9 @@ export default function RepoWorkspace({ params }: PageProps) {
           />
         </div>
 
-        {/* Right Persistent Panel (Chat) */}
+        {/* ========================================================================= */}
+        {/* 5.D: RIGHT PERSISTENT PANEL (AI CHAT) */}
+        {/* ========================================================================= */}
         {showRightPanel && (
           <div className="w-[380px] md:w-[420px] lg:w-[460px] h-full shrink-0 z-10 transition-all duration-300">
             <ChatPanel
@@ -373,15 +619,23 @@ export default function RepoWorkspace({ params }: PageProps) {
               repoName={repo.repo_name}
               onSelectCitation={handleSelectCitation}
               selectedFiles={selectedChatFiles}
-              onRemoveSelectedFile={(f) => setSelectedChatFiles((prev) => prev.filter((p) => p !== f))}
+              onRemoveSelectedFile={(f) =>
+                setSelectedChatFiles((prev) => prev.filter((p) => p !== f))
+              }
               onClearSelectedFiles={() => setSelectedChatFiles([])}
               availableFiles={graphData.nodes.map((n) => n.id)}
-              onAddSelectedFile={(f) => setSelectedChatFiles((prev) => prev.includes(f) ? prev : [...prev, f])}
+              onAddSelectedFile={(f) =>
+                setSelectedChatFiles((prev) =>
+                  prev.includes(f) ? prev : [...prev, f]
+                )
+              }
             />
           </div>
         )}
 
-        {/* Slide-over Code Inspector Drawer */}
+        {/* ========================================================================= */}
+        {/* 5.E: CONTEXTUAL INSPECTOR (MONACO EDITOR CODE DRAWER) */}
+        {/* ========================================================================= */}
         {selectedFile && (
           <CodeDrawer
             repoId={repoId}
@@ -402,12 +656,38 @@ export default function RepoWorkspace({ params }: PageProps) {
             }}
             onOpenGitHistory={handleOpenGitHistory}
             onToggleChatContext={handleToggleChatContext}
-            isInChatContext={selectedFile ? selectedChatFiles.includes(selectedFile) : false}
+            isInChatContext={
+              selectedFile ? selectedChatFiles.includes(selectedFile) : false
+            }
           />
         )}
       </div>
 
-      {/* AI Architecture Explanation Modal */}
+      {/* ========================================================================= */}
+      {/* GLOBAL COMMAND PALETTE (Ctrl+K / Cmd+K) */}
+      {/* ========================================================================= */}
+      <CommandPalette
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        onNavigateTab={(tab) => {
+          if (tab === "chat") {
+            setShowRightPanel(true);
+          } else if (tab === "overview" || tab === "map" || tab === "docs") {
+            setActiveTab(tab as WorkspaceTab);
+          }
+        }}
+        nodes={graphData.nodes}
+        onSelectFile={(f) => {
+          setSelectedFile(f);
+          setTargetLineRange(null);
+        }}
+        onOpenModal={handleOpenModal}
+      />
+
+      {/* ========================================================================= */}
+      {/* FEATURE MODALS & WORKBENCHES */}
+      {/* ========================================================================= */}
+      {/* 1. Multi-Level Architecture Explanation Modal */}
       <ArchitectureExplanationModal
         isOpen={isExplainModalOpen}
         onClose={() => setIsExplainModalOpen(false)}
@@ -416,7 +696,7 @@ export default function RepoWorkspace({ params }: PageProps) {
         onSelectCitation={handleSelectCitation}
       />
 
-      {/* AI Debugger & Error Explorer Modal */}
+      {/* 2. AI Debugger & Stack Trace Explorer Modal */}
       <DebugModal
         isOpen={isDebugModalOpen}
         onClose={() => setIsDebugModalOpen(false)}
@@ -425,13 +705,15 @@ export default function RepoWorkspace({ params }: PageProps) {
         onSelectCitation={handleSelectCitation}
       />
 
-      {/* "What Happens If I Change This?" Impact Analysis Modal */}
+      {/* 3. Dependency Impact Analysis Modal */}
       <ImpactModal
         isOpen={isImpactModalOpen}
         onClose={() => setIsImpactModalOpen(false)}
         repoId={repoId}
         repoName={repo.repo_name}
-        targetFile={impactTargetFile || selectedFile || (graphData.nodes[0]?.id ?? "")}
+        targetFile={
+          impactTargetFile || selectedFile || (graphData.nodes[0]?.id ?? "")
+        }
         availableFiles={graphData.nodes.map((n) => n.id)}
         onChangeTargetFile={(file) => setImpactTargetFile(file)}
         onHighlightOnMap={(affected, target) => {
@@ -443,7 +725,7 @@ export default function RepoWorkspace({ params }: PageProps) {
         onSelectCitation={handleSelectCitation}
       />
 
-      {/* Codebase Health & Architecture Smell Detection Dashboard */}
+      {/* 4. Codebase Health & Smell Detection Modal */}
       <HealthDashboardModal
         isOpen={isHealthModalOpen}
         onClose={() => setIsHealthModalOpen(false)}
@@ -461,13 +743,15 @@ export default function RepoWorkspace({ params }: PageProps) {
         }}
       />
 
-      {/* Git History Intelligence Modal */}
+      {/* 5. Git History Intelligence Modal */}
       <GitHistoryModal
         isOpen={isGitHistoryModalOpen}
         onClose={() => setIsGitHistoryModalOpen(false)}
         repoId={repoId}
         repoName={repo.repo_name}
-        targetFile={gitHistoryTargetFile || selectedFile || (graphData.nodes[0]?.id ?? "")}
+        targetFile={
+          gitHistoryTargetFile || selectedFile || (graphData.nodes[0]?.id ?? "")
+        }
         availableFiles={graphData.nodes.map((n) => n.id)}
         onChangeTargetFile={(file) => setGitHistoryTargetFile(file)}
         onSelectFile={(filePath) => {
@@ -475,11 +759,13 @@ export default function RepoWorkspace({ params }: PageProps) {
           setTargetLineRange(null);
         }}
         onAddToChatContext={(file) => {
-          setSelectedChatFiles((prev) => (prev.includes(file) ? prev : [...prev, file]));
+          setSelectedChatFiles((prev) =>
+            prev.includes(file) ? prev : [...prev, file]
+          );
         }}
       />
 
-      {/* Architecture Snapshots & Export Engine Modal */}
+      {/* 6. Architecture Snapshots & Vector Export Modal */}
       <ExportSnapshotModal
         isOpen={isSnapshotModalOpen}
         onClose={() => setIsSnapshotModalOpen(false)}
@@ -491,4 +777,3 @@ export default function RepoWorkspace({ params }: PageProps) {
     </div>
   );
 }
-

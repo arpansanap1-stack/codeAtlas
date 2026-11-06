@@ -46,7 +46,7 @@ function renderWithCitations(
       <button
         key={`${filePath}-${startLine}-${matchIndex}`}
         onClick={() => onSelect(filePath, startLine, endLine)}
-        className="inline-flex items-center gap-1 px-1.5 py-0.5 mx-1 rounded bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 text-[11px] font-mono transition-colors group align-baseline"
+        className="inline-flex items-center gap-1 px-1.5 py-0.5 mx-1 rounded-md bg-accent-indigo/10 hover:bg-accent-indigo/25 text-accent-indigoLight border border-accent-indigo/30 text-[11px] font-mono transition-colors group align-baseline cursor-pointer"
         title={`View ${filePath} (Lines ${startLine}-${endLine})`}
       >
         <FileCode className="w-3 h-3 group-hover:scale-110 transition-transform" />
@@ -127,11 +127,11 @@ export function OnboardingView({
   };
 
   return (
-    <div className="h-full flex flex-col bg-zinc-950 overflow-hidden">
+    <div className="h-full flex flex-col bg-workspace overflow-hidden">
       {/* Top Action Header */}
-      <div className="h-12 border-b border-zinc-800/80 px-6 flex items-center justify-between bg-zinc-900/50 backdrop-blur-md shrink-0 z-10">
+      <div className="h-12 border-b border-borderSubtle px-6 flex items-center justify-between bg-panel/90 backdrop-blur-md shrink-0 z-10">
         <div className="flex items-center gap-2 text-xs font-mono text-zinc-300">
-          <BookOpen className="w-4 h-4 text-sky-400" />
+          <BookOpen className="w-4 h-4 text-accent-indigoLight" />
           <span className="font-medium text-zinc-100">{repoName}</span>
           <span className="text-zinc-600">/</span>
           <span className="text-zinc-400">ONBOARDING.md</span>
@@ -141,18 +141,18 @@ export function OnboardingView({
           <button
             onClick={regenerateDocs}
             disabled={refreshing}
-            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white border border-zinc-700/60 transition-colors disabled:opacity-50"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg bg-surface hover:bg-surfaceHover text-zinc-300 hover:text-white border border-borderSubtle transition-colors disabled:opacity-50 cursor-pointer"
             title="Regenerate documentation"
           >
             <RefreshCw
-              className={`w-3.5 h-3.5 ${refreshing ? "animate-spin text-sky-400" : ""}`}
+              className={`w-3.5 h-3.5 ${refreshing ? "animate-spin text-accent-indigoLight" : ""}`}
             />
             <span>{refreshing ? "Synthesizing..." : "Regenerate"}</span>
           </button>
 
           <button
             onClick={handleCopy}
-            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono rounded bg-zinc-800 hover:bg-zinc-700 text-zinc-300 hover:text-white border border-zinc-700/60 transition-colors"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg bg-surface hover:bg-surfaceHover text-zinc-300 hover:text-white border border-borderSubtle transition-colors cursor-pointer"
             title="Copy Raw Markdown"
           >
             {copied ? (
@@ -170,10 +170,10 @@ export function OnboardingView({
 
           <button
             onClick={handleDownload}
-            className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono rounded bg-zinc-100 hover:bg-white text-zinc-900 font-medium transition-colors shadow-sm"
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-mono rounded-lg bg-accent-indigo hover:bg-accent-indigoLight text-white font-medium transition-colors shadow-glowIndigo cursor-pointer"
             title="Download ONBOARDING.md file"
           >
-            <Download className="w-3.5 h-3.5 text-zinc-800" />
+            <Download className="w-3.5 h-3.5" />
             <span>Download</span>
           </button>
         </div>
@@ -183,20 +183,20 @@ export function OnboardingView({
       <div className="flex-1 overflow-y-auto px-6 py-8 max-w-4xl mx-auto w-full">
         {loading ? (
           <div className="h-64 flex flex-col items-center justify-center gap-3 text-zinc-400 text-xs font-mono">
-            <Loader2 className="w-5 h-5 animate-spin text-sky-400" />
-            <span>Loading developer onboarding guide...</span>
+            <Loader2 className="w-5 h-5 animate-spin text-accent-indigoLight" />
+            <span>Synthesizing developer onboarding guide...</span>
           </div>
         ) : (
-          <div className="prose prose-invert prose-zinc max-w-none text-zinc-300 text-sm leading-relaxed">
+          <div className="prose prose-invert max-w-none text-zinc-300 text-sm leading-relaxed bg-panel p-8 rounded-2xl border border-borderDefault shadow-card">
             <ReactMarkdown
               components={{
                 h1: ({ children }) => (
-                  <h1 className="text-xl font-bold text-zinc-100 tracking-tight pb-3 border-b border-zinc-800 mb-6">
+                  <h1 className="text-xl font-bold text-zinc-100 tracking-tight pb-3 border-b border-borderSubtle mb-6">
                     {children}
                   </h1>
                 ),
                 h2: ({ children }) => (
-                  <h2 className="text-base font-semibold text-zinc-100 tracking-tight mt-8 mb-4 pb-2 border-b border-zinc-800/60">
+                  <h2 className="text-base font-semibold text-zinc-100 tracking-tight mt-8 mb-4 pb-2 border-b border-borderSubtle">
                     {children}
                   </h2>
                 ),
@@ -242,7 +242,7 @@ export function OnboardingView({
 
                   return (
                     <code
-                      className="px-1.5 py-0.5 rounded bg-zinc-900 border border-zinc-800 text-sky-300 font-mono text-xs"
+                      className="px-1.5 py-0.5 rounded-md bg-workspace border border-borderSubtle text-accent-indigoLight font-mono text-xs"
                       {...props}
                     >
                       {children}
@@ -250,7 +250,7 @@ export function OnboardingView({
                   );
                 },
                 pre: ({ children }) => (
-                  <pre className="p-4 rounded-xl bg-zinc-900/90 border border-zinc-800/80 overflow-x-auto my-4 text-xs font-mono text-zinc-200 shadow-sm">
+                  <pre className="p-4 rounded-xl bg-surface border border-borderSubtle overflow-x-auto my-4 text-xs font-mono text-zinc-200 shadow-sm">
                     {children}
                   </pre>
                 ),

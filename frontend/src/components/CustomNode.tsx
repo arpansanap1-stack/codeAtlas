@@ -20,7 +20,7 @@ function getNodeCategoryStyle(filePath: string, folder: string) {
   const path = `${folder}/${filePath}`.toLowerCase();
   const ext = filePath.split(".").pop()?.toLowerCase();
 
-  // 1. UI Components / Frontend (Muted Sky)
+  // 1. UI Components / Frontend (Indigo / Sky)
   if (
     ext === "tsx" ||
     ext === "jsx" ||
@@ -30,13 +30,14 @@ function getNodeCategoryStyle(filePath: string, folder: string) {
     path.includes("pages")
   ) {
     return {
-      border: "border-sky-500/40 hover:border-sky-400",
-      badge: "bg-sky-500/10 text-sky-400 border-sky-500/20",
-      accent: "text-sky-400",
+      border: "border-indigo-500/35 hover:border-indigo-400/80",
+      badge: "bg-indigo-500/10 text-indigo-300 border-indigo-500/25",
+      accent: "text-indigo-400",
+      glow: "hover:shadow-glowIndigo",
     };
   }
 
-  // 2. Services / API / Backend Routes (Muted Emerald)
+  // 2. Services / API / Backend Routes (Emerald)
   if (
     path.includes("service") ||
     path.includes("api") ||
@@ -45,13 +46,14 @@ function getNodeCategoryStyle(filePath: string, folder: string) {
     path.includes("endpoints")
   ) {
     return {
-      border: "border-emerald-500/40 hover:border-emerald-400",
-      badge: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
+      border: "border-emerald-500/35 hover:border-emerald-400/80",
+      badge: "bg-emerald-500/10 text-emerald-300 border-emerald-500/25",
       accent: "text-emerald-400",
+      glow: "hover:shadow-glowEmerald",
     };
   }
 
-  // 3. Models / Schemas / Configs (Muted Amber)
+  // 3. Models / Schemas / Configs (Amber)
   if (
     path.includes("model") ||
     path.includes("schema") ||
@@ -63,13 +65,14 @@ function getNodeCategoryStyle(filePath: string, folder: string) {
     ext === "toml"
   ) {
     return {
-      border: "border-amber-500/40 hover:border-amber-400",
-      badge: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+      border: "border-amber-500/35 hover:border-amber-400/80",
+      badge: "bg-amber-500/10 text-amber-300 border-amber-500/25",
       accent: "text-amber-400",
+      glow: "hover:shadow-amber-500/10",
     };
   }
 
-  // 4. Database / Utils / Libs (Muted Violet)
+  // 4. Database / Utils / Libs (Purple / Cyan)
   if (
     path.includes("db") ||
     path.includes("database") ||
@@ -78,17 +81,19 @@ function getNodeCategoryStyle(filePath: string, folder: string) {
     path.includes("helper")
   ) {
     return {
-      border: "border-purple-500/40 hover:border-purple-400",
-      badge: "bg-purple-500/10 text-purple-400 border-purple-500/20",
+      border: "border-purple-500/35 hover:border-purple-400/80",
+      badge: "bg-purple-500/10 text-purple-300 border-purple-500/25",
       accent: "text-purple-400",
+      glow: "hover:shadow-purple-500/10",
     };
   }
 
-  // Default: Dark Zinc
+  // Default: Slate Neutral
   return {
-    border: "border-zinc-800 hover:border-zinc-700",
-    badge: "bg-zinc-800 text-zinc-400 border-zinc-700/50",
+    border: "border-borderDefault hover:border-borderFocus",
+    badge: "bg-surface text-zinc-400 border-borderSubtle",
     accent: "text-zinc-400",
+    glow: "",
   };
 }
 
@@ -104,17 +109,18 @@ export const CustomNode = memo(function CustomNode({
   return (
     <div
       className={cn(
-        "relative group min-w-[210px] max-w-[280px] rounded-lg bg-zinc-900/90 backdrop-blur-sm p-3 border transition-all duration-200 shadow-md",
+        "relative group min-w-[210px] max-w-[280px] rounded-xl bg-panel/95 backdrop-blur-md p-3 border transition-all duration-200 shadow-card",
         style.border,
-        selected && "ring-2 ring-sky-400/80 border-sky-400 shadow-lg shadow-sky-500/10",
+        style.glow,
+        selected && "ring-2 ring-indigo-400 border-indigo-400 shadow-glowIndigo",
         data.isImpactTarget && "ring-2 ring-amber-400 border-amber-400 shadow-lg shadow-amber-500/20",
         data.isImpactAffected && "ring-1 ring-rose-500/80 border-rose-500/80 shadow-md shadow-rose-500/10",
-        data.isDimmed && "opacity-25 grayscale"
+        data.isDimmed && "opacity-20 grayscale scale-[0.98]"
       )}
     >
       {/* Journey Step Number Badge */}
       {typeof data.journeyStepNumber === "number" && (
-        <div className="absolute -top-2.5 -right-2.5 px-2 py-0.5 rounded-full bg-sky-500 text-zinc-950 font-bold font-mono text-[10px] shadow-lg shadow-sky-500/30 flex items-center gap-1 z-10 animate-bounce">
+        <div className="absolute -top-2.5 -right-2.5 px-2 py-0.5 rounded-full bg-accent-indigo text-white font-bold font-mono text-[10px] shadow-glowIndigo flex items-center gap-1 z-10 animate-bounce">
           <span>Step {data.journeyStepNumber}</span>
         </div>
       )}
@@ -137,14 +143,14 @@ export const CustomNode = memo(function CustomNode({
       <Handle
         type="target"
         position={Position.Left}
-        className="!w-2 !h-2 !bg-zinc-500 !border-zinc-900 group-hover:!bg-sky-400 transition-colors"
+        className="!w-2.5 !h-2.5 !bg-zinc-600 !border-panel group-hover:!bg-indigo-400 transition-colors"
       />
 
       {/* Header: Folder badge */}
       <div className="flex items-center justify-between gap-2 mb-1.5">
         <span
           className={cn(
-            "text-[10px] font-mono tracking-tight px-1.5 py-0.5 rounded border max-w-[150px] truncate",
+            "text-[10px] font-mono tracking-tight px-1.5 py-0.5 rounded-md border max-w-[150px] truncate",
             style.badge
           )}
           title={data.folder || "root"}
@@ -168,7 +174,7 @@ export const CustomNode = memo(function CustomNode({
               className="flex items-center text-zinc-400"
               title={`Imports ${data.out_degree} files`}
             >
-              <ArrowUpRight className="w-2.5 h-2.5 text-sky-400 mr-0.5" />
+              <ArrowUpRight className="w-2.5 h-2.5 text-indigo-400 mr-0.5" />
               {data.out_degree}
             </span>
           )}
@@ -177,7 +183,7 @@ export const CustomNode = memo(function CustomNode({
 
       {/* Main Filename */}
       <div className="flex items-center gap-2">
-        <FileCode className={cn("w-4 h-4 shrink-0", style.accent)} />
+        <FileCode className={cn("w-4 h-4 shrink-0 transition-transform group-hover:scale-110", style.accent)} />
         <span
           className="text-xs font-mono font-medium text-zinc-200 truncate group-hover:text-white"
           title={data.label}
@@ -190,9 +196,10 @@ export const CustomNode = memo(function CustomNode({
       <Handle
         type="source"
         position={Position.Right}
-        className="!w-2 !h-2 !bg-zinc-500 !border-zinc-900 group-hover:!bg-sky-400 transition-colors"
+        className="!w-2.5 !h-2.5 !bg-zinc-600 !border-panel group-hover:!bg-indigo-400 transition-colors"
       />
     </div>
   );
 });
+
 

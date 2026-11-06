@@ -115,12 +115,12 @@ export function JourneyPlayer({
     const isLast = currentStepIndex === totalSteps - 1;
 
     return (
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 w-[94%] max-w-2xl bg-zinc-950/95 border border-zinc-800 rounded-xl shadow-2xl backdrop-blur-md p-4 animate-in slide-in-from-bottom-4 duration-300">
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-40 w-[94%] max-w-2xl bg-panel/98 border border-borderDefault rounded-2xl shadow-elevated backdrop-blur-xl p-4 animate-slide-up">
         {/* Top bar: Topic & Progress */}
-        <div className="flex items-center justify-between gap-3 pb-3 border-b border-zinc-800/80">
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="w-6 h-6 rounded bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 shrink-0">
-              <Route className="w-3.5 h-3.5" />
+        <div className="flex items-center justify-between gap-3 pb-3 border-b border-borderSubtle">
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div className="w-7 h-7 rounded-lg bg-accent-indigo/15 border border-accent-indigo/30 flex items-center justify-center text-accent-indigoLight shrink-0">
+              <Route className="w-4 h-4" />
             </div>
             <div className="truncate">
               <span className="text-xs font-semibold text-zinc-100 truncate block">
@@ -138,16 +138,16 @@ export function JourneyPlayer({
                 setActiveJourney(null);
                 setCurrentStepIndex(0);
               }}
-              className="px-2 py-1 rounded bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-[11px] text-zinc-400 hover:text-zinc-200 flex items-center gap-1 transition-colors"
+              className="px-2.5 py-1 rounded-lg bg-surface hover:bg-surfaceHover border border-borderSubtle text-[11px] text-zinc-300 hover:text-white flex items-center gap-1.5 transition-colors cursor-pointer"
               title="Pick a different flow"
             >
-              <ListRestart className="w-3 h-3" />
+              <ListRestart className="w-3 h-3 text-accent-indigoLight" />
               <span>Change Flow</span>
             </button>
 
             <button
               onClick={onClose}
-              className="p-1 rounded text-zinc-400 hover:text-zinc-200 hover:bg-zinc-900 transition-colors"
+              className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-surfaceHover transition-colors cursor-pointer"
               title="Close Journey Player"
             >
               <X className="w-4 h-4" />
@@ -165,12 +165,12 @@ export function JourneyPlayer({
               <button
                 key={step.step_number}
                 onClick={() => handleJumpToStep(idx)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono shrink-0 transition-all ${
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono shrink-0 transition-all cursor-pointer ${
                   isCurrent
-                    ? "bg-sky-500 text-zinc-950 font-semibold shadow-sm shadow-sky-500/30"
+                    ? "bg-accent-indigo text-white font-semibold shadow-glowIndigo"
                     : isPast
-                    ? "bg-zinc-900 text-zinc-300 border border-zinc-800 hover:border-zinc-700"
-                    : "bg-zinc-950 text-zinc-500 border border-zinc-800/60 hover:text-zinc-300"
+                    ? "bg-surface text-zinc-300 border border-borderSubtle hover:border-borderDefault"
+                    : "bg-workspace text-zinc-500 border border-borderSubtle/60 hover:text-zinc-300"
                 }`}
               >
                 <span>{step.step_number}</span>
@@ -181,12 +181,12 @@ export function JourneyPlayer({
         </div>
 
         {/* Step Explanation Card */}
-        <div className="mt-1 p-3 rounded-lg bg-zinc-900/70 border border-zinc-800/80 space-y-2">
+        <div className="mt-1 p-3.5 rounded-xl bg-surface/80 border border-borderSubtle space-y-2">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-xs font-semibold text-sky-300 flex items-center gap-1.5">
+            <span className="text-xs font-semibold text-accent-indigoLight flex items-center gap-1.5">
               <span>{currentStep.title}</span>
               {currentStep.symbol_name && (
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-300 font-mono">
+                <span className="text-[10px] px-1.5 py-0.5 rounded bg-surfaceElevated text-zinc-300 font-mono border border-borderSubtle">
                   {currentStep.symbol_name}
                 </span>
               )}
@@ -201,7 +201,7 @@ export function JourneyPlayer({
                   currentStep.end_line
                 )
               }
-              className="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 text-[11px] font-mono transition-colors"
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-accent-indigo/10 hover:bg-accent-indigo/25 text-accent-indigoLight border border-accent-indigo/30 text-[11px] font-mono transition-colors cursor-pointer"
               title="Click to view code in Monaco Editor"
             >
               <FileCode className="w-3 h-3" />
@@ -217,8 +217,8 @@ export function JourneyPlayer({
           </p>
 
           {currentStep.outgoing_target && (
-            <div className="text-[11px] font-mono text-zinc-400 flex items-center gap-1.5 pt-1 border-t border-zinc-800/60">
-              <span className="text-sky-400 font-semibold">Next Flow:</span>
+            <div className="text-[11px] font-mono text-zinc-400 flex items-center gap-1.5 pt-1.5 border-t border-borderSubtle">
+              <span className="text-accent-indigoLight font-semibold">Next Flow:</span>
               <span>Dispatches to `{currentStep.outgoing_target}`</span>
             </div>
           )}
@@ -229,20 +229,20 @@ export function JourneyPlayer({
           <button
             onClick={handlePrevStep}
             disabled={isFirst}
-            className="px-3 py-1.5 rounded-lg bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-xs text-zinc-300 hover:text-white flex items-center gap-1.5 transition-colors disabled:opacity-30 disabled:pointer-events-none"
+            className="px-3.5 py-1.5 rounded-xl bg-surface hover:bg-surfaceHover border border-borderSubtle text-xs text-zinc-300 hover:text-white flex items-center gap-1.5 transition-colors disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Previous Step</span>
           </button>
 
           <span className="text-[11px] text-zinc-500 font-mono">
-            Use Prev / Next to step through execution
+            Step {currentStepIndex + 1} of {totalSteps}
           </span>
 
           <button
             onClick={handleNextStep}
             disabled={isLast}
-            className="px-4 py-1.5 rounded-lg bg-sky-500 hover:bg-sky-400 text-xs font-semibold text-zinc-950 flex items-center gap-1.5 shadow-sm transition-colors disabled:opacity-30 disabled:pointer-events-none"
+            className="px-4 py-1.5 rounded-xl bg-accent-indigo hover:bg-accent-indigoLight text-xs font-semibold text-white flex items-center gap-1.5 shadow-glowIndigo transition-all disabled:opacity-30 disabled:pointer-events-none cursor-pointer"
           >
             <span>Next Step</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -254,18 +254,18 @@ export function JourneyPlayer({
 
   // Journey Selection Modal / Drawer View
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm animate-in fade-in duration-200">
-      <div className="relative w-full max-w-xl bg-zinc-950 border border-zinc-800 rounded-xl shadow-2xl overflow-hidden p-6 space-y-5">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in">
+      <div className="relative w-full max-w-xl bg-panel border border-borderDefault rounded-2xl shadow-elevated overflow-hidden p-6 space-y-5 animate-scale-in">
         {/* Header */}
-        <div className="flex items-center justify-between gap-3 pb-3 border-b border-zinc-800">
+        <div className="flex items-center justify-between gap-3 pb-3 border-b border-borderSubtle">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400">
+            <div className="w-8 h-8 rounded-xl bg-accent-indigo/15 border border-accent-indigo/30 flex items-center justify-center text-accent-indigoLight">
               <Route className="w-4 h-4" />
             </div>
             <div>
               <h2 className="text-sm font-semibold text-zinc-100 flex items-center gap-2">
                 <span>Journey Through the Codebase</span>
-                <span className="text-[11px] px-2 py-0.5 rounded-full bg-zinc-900 text-zinc-400 border border-zinc-800 font-mono">
+                <span className="text-[11px] px-2 py-0.5 rounded-full bg-surface text-zinc-400 border border-borderSubtle font-mono">
                   Interactive Tours
                 </span>
               </h2>
@@ -277,7 +277,7 @@ export function JourneyPlayer({
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-md text-zinc-400 hover:text-zinc-100 hover:bg-zinc-900 transition-colors"
+            className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-100 hover:bg-surfaceHover transition-colors cursor-pointer"
           >
             <X className="w-4 h-4" />
           </button>
@@ -299,12 +299,12 @@ export function JourneyPlayer({
                 }
               }}
               placeholder="e.g. How does authentication work? or Data Ingestion Flow"
-              className="flex-1 bg-zinc-900 border border-zinc-800 rounded-lg px-3 py-2 text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-sky-500/60 font-mono"
+              className="flex-1 bg-surface border border-borderSubtle rounded-xl px-3.5 py-2 text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-borderFocus font-mono transition-colors"
             />
             <button
               onClick={() => handleStartJourney(topicInput)}
               disabled={loading || !topicInput.trim()}
-              className="px-4 py-2 rounded-lg bg-sky-500 hover:bg-sky-400 text-xs font-semibold text-zinc-950 flex items-center gap-1.5 shadow-sm transition-colors disabled:opacity-50"
+              className="px-4 py-2 rounded-xl bg-accent-indigo hover:bg-accent-indigoLight text-xs font-semibold text-white flex items-center gap-1.5 shadow-glowIndigo transition-all disabled:opacity-50 cursor-pointer"
             >
               {loading ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -317,7 +317,7 @@ export function JourneyPlayer({
         </div>
 
         {error && (
-          <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-mono">
+          <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 text-xs font-mono">
             {error}
           </div>
         )}
@@ -325,7 +325,7 @@ export function JourneyPlayer({
         {/* Suggested Journeys for this Repo */}
         <div className="space-y-2.5 pt-2">
           <span className="text-xs font-semibold text-zinc-400 flex items-center gap-1.5">
-            <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+            <Sparkles className="w-3.5 h-3.5 text-accent-indigoLight" />
             <span>Recommended Journeys for {repoName}:</span>
           </span>
 
@@ -335,14 +335,14 @@ export function JourneyPlayer({
                 key={idx}
                 disabled={loading}
                 onClick={() => handleStartJourney(item.topic)}
-                className="text-left p-3 rounded-lg bg-zinc-900/60 hover:bg-zinc-900 border border-zinc-800/80 hover:border-sky-500/40 transition-all group flex items-start justify-between gap-3"
+                className="text-left p-3.5 rounded-xl bg-surface hover:bg-surfaceHover border border-borderSubtle hover:border-accent-indigo/40 transition-all group flex items-start justify-between gap-3 cursor-pointer shadow-card"
               >
                 <div className="space-y-1 min-w-0">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-medium text-zinc-200 group-hover:text-sky-400 transition-colors">
+                    <span className="text-xs font-medium text-zinc-200 group-hover:text-accent-indigoLight transition-colors">
                       {item.topic}
                     </span>
-                    <span className="text-[10px] px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400 border border-zinc-700/50 font-mono">
+                    <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-surfaceElevated text-zinc-400 border border-borderSubtle font-mono">
                       {item.category}
                     </span>
                   </div>
@@ -350,7 +350,7 @@ export function JourneyPlayer({
                     {item.description}
                   </p>
                 </div>
-                <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-sky-400 group-hover:translate-x-0.5 transition-all shrink-0 mt-0.5" />
+                <ChevronRight className="w-4 h-4 text-zinc-500 group-hover:text-accent-indigoLight group-hover:translate-x-0.5 transition-all shrink-0 mt-0.5" />
               </button>
             ))}
           </div>

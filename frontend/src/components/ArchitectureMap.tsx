@@ -325,8 +325,8 @@ function ArchitectureMapInner({
 
   return (
     <div className="relative w-full h-full bg-zinc-950 overflow-hidden select-none">
-      {/* Floating Toolbar: Search & Layout Direction Toggle */}
-      <div className="absolute top-4 left-4 z-10 flex items-center gap-2 bg-zinc-900/90 backdrop-blur-md p-1.5 rounded-lg border border-zinc-800 shadow-xl">
+      {/* Floating Toolbar: Search, Category Filters & Layout Direction */}
+      <div className="absolute top-4 left-4 z-10 flex flex-wrap items-center gap-2 bg-panel/95 backdrop-blur-md p-1.5 rounded-xl border border-borderDefault shadow-elevated">
         {/* Search Input */}
         <div className="relative flex items-center">
           <Search className="w-3.5 h-3.5 text-zinc-400 absolute left-2.5 pointer-events-none" />
@@ -335,30 +335,54 @@ function ArchitectureMapInner({
             placeholder="Search modules..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-48 bg-zinc-950/80 border border-zinc-800 rounded-md pl-8 pr-3 py-1 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-zinc-700"
+            className="w-44 md:w-52 bg-surface border border-borderSubtle rounded-lg pl-8 pr-3 py-1 text-xs text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-borderFocus font-sans transition-colors"
           />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-2 text-zinc-500 hover:text-zinc-300 text-xs"
+            >
+              ×
+            </button>
+          )}
         </div>
 
-        <div className="h-4 w-[1px] bg-zinc-800" />
+        <div className="h-4 w-[1px] bg-borderSubtle" />
 
         {/* Direction Toggle */}
         <button
           onClick={() => setDirection((d) => (d === "LR" ? "TB" : "LR"))}
-          className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono text-zinc-300 hover:text-white bg-zinc-800/80 hover:bg-zinc-700/80 rounded transition-colors"
+          className="flex items-center gap-1.5 px-2.5 py-1 text-xs font-mono text-zinc-300 hover:text-white bg-surface hover:bg-surfaceHover border border-borderSubtle rounded-lg transition-colors cursor-pointer"
           title={`Switch to ${direction === "LR" ? "Top-to-Bottom" : "Left-to-Right"} Layout`}
         >
           {direction === "LR" ? (
             <>
-              <ArrowRight className="w-3 h-3 text-sky-400" />
-              <span>LR Layout</span>
+              <ArrowRight className="w-3 h-3 text-accent-indigoLight" />
+              <span>Left → Right</span>
             </>
           ) : (
             <>
-              <ArrowDown className="w-3 h-3 text-emerald-400" />
-              <span>TB Layout</span>
+              <ArrowDown className="w-3 h-3 text-accent-emerald" />
+              <span>Top → Down</span>
             </>
           )}
         </button>
+
+        {/* Node stats / Category badges */}
+        <div className="hidden lg:flex items-center gap-1.5 pl-1 text-[10px] font-mono text-zinc-400">
+          <span className="px-2 py-0.5 rounded-md bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">
+            UI
+          </span>
+          <span className="px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+            Services
+          </span>
+          <span className="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-300 border border-amber-500/20">
+            Models
+          </span>
+          <span className="px-2 py-0.5 rounded-md bg-purple-500/10 text-purple-300 border border-purple-500/20">
+            Utils
+          </span>
+        </div>
       </div>
 
       {/* Main Flow Canvas */}
@@ -375,18 +399,18 @@ function ArchitectureMapInner({
         fitViewOptions={{ padding: 0.2 }}
         minZoom={0.2}
         maxZoom={2}
-        className="bg-zinc-950"
+        className="bg-workspace"
       >
         <FlowCameraController focusId={selectedFile} />
-        <Background color="#27272a" gap={20} size={1} />
+        <Background color="#1f2533" gap={24} size={1} />
         <Controls className="!bottom-4 !left-4" />
         <MiniMap
           nodeColor={(n) => {
-            if (n.data?.isDimmed) return "#27272a";
-            return "#3f3f46";
+            if (n.data?.isDimmed) return "#1e2430";
+            return "#4f46e5";
           }}
-          maskColor="rgba(9, 9, 11, 0.75)"
-          className="!bottom-4 !right-4 !bg-zinc-900 !border !border-zinc-800 !rounded-lg"
+          maskColor="rgba(12, 14, 20, 0.85)"
+          className="!bottom-4 !right-4 !bg-panel !border !border-borderDefault !rounded-xl overflow-hidden shadow-card"
         />
       </ReactFlow>
     </div>
