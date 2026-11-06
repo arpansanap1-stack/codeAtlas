@@ -134,7 +134,7 @@ Every new feature implemented in this codebase must be logged here following the
 - **Verification Commands:**
   - Backend: `backend\.venv\Scripts\pytest backend/tests/test_health_service.py -v` (3 passed)
   - Frontend: `frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit` (0 errors)
-- **Git Commit:** Pending
+- **Git Commit:** `82e339e`
 - **Notes / Breaking Changes:**
   Adds GET `/api/repos/{repo_id}/health-metrics`.
 
@@ -156,7 +156,7 @@ Every new feature implemented in this codebase must be logged here following the
 - **Verification Commands:**
   - Backend: `backend\.venv\Scripts\pytest backend/tests/test_health_service.py -v` (3 passed)
   - Frontend: `frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit` (0 errors)
-- **Git Commit:** Pending
+- **Git Commit:** `82e339e`
 - **Notes / Breaking Changes:**
   Integrated with GET `/api/repos/{repo_id}/health-metrics`.
 
@@ -197,7 +197,8 @@ Every new feature implemented in this codebase must be logged here following the
 
 | Commit | Date | Tag | Summary |
 | :--- | :--- | :--- | :--- |
-| `HEAD` | 2026-11-06 | - | feat: implement AI Debugger error explorer & 'What Happens If I Change This?' impact analysis |
+| `82e339e` | 2026-11-06 | - | feat: implement Codebase Health Dashboard and Architecture Smell Detection |
+| `055c470` | 2026-11-06 | - | feat: implement AI Debugger error explorer & 'What Happens If I Change This?' impact analysis |
 | `a0080f1` | 2026-11-06 | - | docs: record commit hash c28a53b in feature tracker |
 | `c28a53b` | 2026-11-06 | - | feat: implement AI architecture explanation mode & interactive codebase journeys |
 | `26d1e57` | 2026-11-06 | - | chore: specify fast local tsc command for frontend verification |
