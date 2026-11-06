@@ -89,7 +89,7 @@ Every new feature implemented in this codebase must be logged here following the
 - **Verification Commands:**
   - Backend: `backend\.venv\Scripts\pytest backend/tests/test_debugger_service.py -v` (PASSED)
   - Frontend: `frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit` (0 errors)
-- **Git Commit:** Pending
+- **Git Commit:** `055c470`
 - **Notes / Breaking Changes:**
   Adds POST `/api/repos/{repo_id}/debug`.
 
@@ -113,7 +113,7 @@ Every new feature implemented in this codebase must be logged here following the
 - **Verification Commands:**
   - Backend: `backend\.venv\Scripts\pytest backend/tests/test_impact_service.py -v` (PASSED)
   - Frontend: `frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit` (0 errors)
-- **Git Commit:** Pending
+- **Git Commit:** `055c470`
 - **Notes / Breaking Changes:**
   Adds GET `/api/repos/{repo_id}/impact?file_path=...`.
 
