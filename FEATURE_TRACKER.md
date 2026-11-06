@@ -45,7 +45,7 @@ Every new feature implemented in this codebase must be logged here following the
 - **Verification Commands:**
   - Backend: `backend\.venv\Scripts\pytest backend/tests/test_explanation_service.py -v` (PASSED)
   - Frontend: `frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit` (0 errors)
-- **Git Commit:** Pending
+- **Git Commit:** `c28a53b`
 - **Notes / Breaking Changes:**
   Adds GET `/api/repos/{repo_id}/explanation?level={beginner|intermediate|expert}`.
 
@@ -68,7 +68,7 @@ Every new feature implemented in this codebase must be logged here following the
 - **Verification Commands:**
   - Backend: `backend\.venv\Scripts\pytest backend/tests/test_journey_service.py -v` (PASSED)
   - Frontend: `frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit` (0 errors)
-- **Git Commit:** Pending
+- **Git Commit:** `c28a53b`
 - **Notes / Breaking Changes:**
   Adds GET `/api/repos/{repo_id}/journeys` and POST `/api/repos/{repo_id}/journey`.
 
