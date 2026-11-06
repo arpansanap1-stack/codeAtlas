@@ -247,7 +247,7 @@ Every new feature implemented in this codebase must be logged here following the
   Comprehensive transformation of CodeAtlas into a premium, motion-rich developer intelligence workspace inspired by Linear, VS Code, and Raycast. Adds collapsible sidebar navigation across Overview, Explore, Intelligence, and Documentation subsystems, global Ctrl+K Command Palette, refined neutral dark theme tokens, spring-based micro-interactions, synchronized canvas/Monaco/Chat transitions, and responsive layout without breaking existing API integrations or graph logic.
 - **Verification Commands:**
   - Frontend: `frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit`
-- **Git Commit:** (Pending user review)
+- **Git Commit:** `b6bd899`
 - **Notes / Breaking Changes:**
   Zero backend modifications. Preserves all API contracts, SSE streaming, Monaco line decorations, and React Flow physics.
 
@@ -274,10 +274,10 @@ Every new feature implemented in this codebase must be logged here following the
 ## 📌 Implementation Queue
 
 ### Upcoming Candidate Features (Backlog)
-- [ ] **[FEAT-010] Multi-Branch & Tag Selector**: Ingest specific branches (`develop`, `staging`) or release tags instead of only the default branch.
-- [ ] **[FEAT-011] Language Filter on Architecture Canvas**: Filter nodes by language (e.g. show only Python files, or only TypeScript/TSX).
-- [ ] **[FEAT-012] Enhanced Call Graph Resolution**: Deepen AST analysis to detect function-to-function invocation edges across files.
-- [ ] **[FEAT-013] Chat History Persistence**: Store multi-turn chat sessions in PostgreSQL/LocalStorage for persistent repo exploration.
+- [ ] **[FEAT-011] Multi-Branch & Tag Selector**: Ingest specific branches (`develop`, `staging`) or release tags instead of only the default branch.
+- [ ] **[FEAT-012] Language Filter on Architecture Canvas**: Filter nodes by language (e.g. show only Python files, or only TypeScript/TSX).
+- [ ] **[FEAT-013] Enhanced Call Graph Resolution**: Deepen AST analysis to detect function-to-function invocation edges across files.
+- [ ] **[FEAT-014] Chat History Persistence**: Store multi-turn chat sessions in PostgreSQL/LocalStorage for persistent repo exploration.
 
 ---
 
@@ -285,6 +285,7 @@ Every new feature implemented in this codebase must be logged here following the
 
 | Commit | Date | Tag | Summary |
 | :--- | :--- | :--- | :--- |
+| `b6bd899` | 2026-11-06 | - | docs: comprehensive README overhaul with new intelligence features and command palette |
 | `0096ccf` | 2026-11-06 | - | feat: implement Git History Intelligence, Chat With Selected Code, and Architecture Snapshots |
 | `82e339e` | 2026-11-06 | - | feat: implement Codebase Health Dashboard and Architecture Smell Detection |
 | `055c470` | 2026-11-06 | - | feat: implement AI Debugger error explorer & 'What Happens If I Change This?' impact analysis |
