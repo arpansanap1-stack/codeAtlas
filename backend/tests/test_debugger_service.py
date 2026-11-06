@@ -84,3 +84,4 @@ def test_diagnose_runtime_error():
     assert res.suspicious_locations[0].start_line <= 24
     assert res.suspicious_locations[0].end_line >= 24
     assert "Proposed Fix" in res.suggested_fix
+

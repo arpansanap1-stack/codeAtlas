@@ -1,6 +1,7 @@
 import {
   ArchitectureExplanationResponse,
   ArchitectureLevel,
+  CodebaseHealthResponse,
   DebugResponse,
   FileContentResponse,
   GeminiKeyResponse,
@@ -167,6 +168,19 @@ export async function getImpactAnalysis(
   }
   return res.json();
 }
+
+export async function getCodebaseHealth(
+  repoId: string
+): Promise<CodebaseHealthResponse> {
+  const res = await fetch(`${API_BASE}/api/repos/${repoId}/health-metrics`);
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({ detail: "Failed to evaluate codebase health" }));
+    throw new Error(errorData.detail || "Failed to evaluate codebase health metrics");
+  }
+  return res.json();
+}
+
 
 
 

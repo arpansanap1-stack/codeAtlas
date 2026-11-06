@@ -16,6 +16,7 @@ import {
   Route,
   Bug,
   AlertOctagon,
+  Activity,
 } from "lucide-react";
 import { ArchitectureMap } from "@/components/ArchitectureMap";
 import { OnboardingView } from "@/components/OnboardingView";
@@ -25,6 +26,7 @@ import { ArchitectureExplanationModal } from "@/components/ArchitectureExplanati
 import { JourneyPlayer } from "@/components/JourneyPlayer";
 import { DebugModal } from "@/components/DebugModal";
 import { ImpactModal } from "@/components/ImpactModal";
+import { HealthDashboardModal } from "@/components/HealthDashboardModal";
 import GeminiKeyModal from "@/components/GeminiKeyModal";
 import { getRepository, getRepositoryGraph } from "@/lib/api";
 import { GraphData, JourneyResponse, RepoIngestResponse } from "@/types";
@@ -60,6 +62,9 @@ export default function RepoWorkspace({ params }: PageProps) {
   const [isImpactModalOpen, setIsImpactModalOpen] = useState(false);
   const [impactTargetFile, setImpactTargetFile] = useState<string>("");
   const [impactAffectedNodes, setImpactAffectedNodes] = useState<string[] | null>(null);
+
+  // New Features: Codebase Health & Smell Detection State
+  const [isHealthModalOpen, setIsHealthModalOpen] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
@@ -234,6 +239,16 @@ export default function RepoWorkspace({ params }: PageProps) {
             </span>
           </button>
 
+          {/* Codebase Health & Smell Detection Button */}
+          <button
+            onClick={() => setIsHealthModalOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-850 border border-zinc-800 text-xs font-mono text-zinc-300 hover:text-white transition-all shadow-sm group"
+            title="Codebase Health Dashboard & Architecture Smell Detection (Cycles, God files, Dead code, Hotspots)"
+          >
+            <Activity className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
+            <span className="hidden sm:inline">Health & Smells</span>
+          </button>
+
           {/* Clear Blast Radius Filter if active */}
           {impactAffectedNodes && (
             <button
@@ -374,6 +389,24 @@ export default function RepoWorkspace({ params }: PageProps) {
           setSelectedFile(target);
         }}
         onSelectCitation={handleSelectCitation}
+      />
+
+      {/* Codebase Health & Architecture Smell Detection Dashboard */}
+      <HealthDashboardModal
+        isOpen={isHealthModalOpen}
+        onClose={() => setIsHealthModalOpen(false)}
+        repoId={repoId}
+        repoName={repo.repo_name}
+        onHighlightOnMap={(affected, target) => {
+          setActiveTab("map");
+          setImpactTargetFile(target);
+          setImpactAffectedNodes(affected);
+          setSelectedFile(target);
+        }}
+        onSelectFile={(filePath) => {
+          setSelectedFile(filePath);
+          setTargetLineRange(null);
+        }}
       />
     </div>
   );

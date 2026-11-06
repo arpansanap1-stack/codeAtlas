@@ -165,5 +165,51 @@ export interface ImpactAnalysisResponse {
   recommendations: string[];
 }
 
+export type ArchitectureSmellType =
+  | "circular_dependency"
+  | "god_file"
+  | "oversized_module"
+  | "dead_module"
+  | "tight_coupling";
+
+export interface ArchitectureSmell {
+  smell_type: ArchitectureSmellType;
+  severity: "critical" | "warning" | "info";
+  title: string;
+  description: string;
+  affected_files: string[];
+  refactoring_tip: string;
+}
+
+export interface LanguageMetric {
+  language: string;
+  file_count: number;
+  percentage: number;
+}
+
+export interface ModuleMetric {
+  file_path: string;
+  metric_label: string;
+  value: number;
+  details?: string | null;
+}
+
+export interface CodebaseHealthResponse {
+  repo_id: string;
+  health_score: number;
+  health_rating: string;
+  total_files: number;
+  total_lines: number;
+  graph_density: number;
+  languages: LanguageMetric[];
+  largest_modules: ModuleMetric[];
+  most_connected_files: ModuleMetric[];
+  circular_dependencies: string[][];
+  dead_files: string[];
+  smells: ArchitectureSmell[];
+  summary: string;
+}
+
+
 
 

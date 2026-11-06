@@ -117,6 +117,49 @@ Every new feature implemented in this codebase must be logged here following the
 - **Notes / Breaking Changes:**
   Adds GET `/api/repos/{repo_id}/impact?file_path=...`.
 
+### [FEAT-005] Codebase Health Dashboard & Metrics Engine
+- **Status:** [COMPLETED]
+- **Created Date:** 2026-11-06
+- **Target Modules:**
+  - `backend/app/models/schemas.py`
+  - `backend/app/services/health_service.py`
+  - `backend/app/main.py`
+  - `backend/tests/test_health_service.py`
+  - `frontend/src/types/index.ts`
+  - `frontend/src/lib/api.ts`
+  - `frontend/src/components/HealthDashboardModal.tsx`
+  - `frontend/src/app/repo/[id]/page.tsx`
+- **Description & User Value:**
+  Provides an overarching health dashboard with an algorithmic 0-100 codebase health score, language distribution breakdown, line count metrics, largest modules, most connected dependency hotspots, and complexity indicators.
+- **Verification Commands:**
+  - Backend: `backend\.venv\Scripts\pytest backend/tests/test_health_service.py -v` (3 passed)
+  - Frontend: `frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit` (0 errors)
+- **Git Commit:** Pending
+- **Notes / Breaking Changes:**
+  Adds GET `/api/repos/{repo_id}/health-metrics`.
+
+### [FEAT-006] Architecture Smell & Anti-Pattern Detection Engine
+- **Status:** [COMPLETED]
+- **Created Date:** 2026-11-06
+- **Target Modules:**
+  - `backend/app/models/schemas.py`
+  - `backend/app/services/health_service.py`
+  - `backend/app/main.py`
+  - `backend/tests/test_health_service.py`
+  - `frontend/src/types/index.ts`
+  - `frontend/src/lib/api.ts`
+  - `frontend/src/components/HealthDashboardModal.tsx`
+  - `frontend/src/components/ArchitectureMap.tsx`
+  - `frontend/src/app/repo/[id]/page.tsx`
+- **Description & User Value:**
+  Automatically analyzes the repository's dependency graph and source files to detect architectural smells: Circular Dependencies (with exact cycle paths), God Files (over-connected hubs), Oversized Blobs, Unused/Dead Modules, and Tightly Coupled Pairs. Provides actionable refactoring advice and one-click visualization of smell paths directly on the React Flow canvas.
+- **Verification Commands:**
+  - Backend: `backend\.venv\Scripts\pytest backend/tests/test_health_service.py -v` (3 passed)
+  - Frontend: `frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit` (0 errors)
+- **Git Commit:** Pending
+- **Notes / Breaking Changes:**
+  Integrated with GET `/api/repos/{repo_id}/health-metrics`.
+
 <!-- Add new feature blocks below following this exact template -->
 
 ### 📝 Feature Template (Copy & Paste for New Features)

@@ -181,3 +181,4 @@ def get_impact_service() -> ImpactService:
     if _impact_service_instance is None:
         _impact_service_instance = ImpactService()
     return _impact_service_instance
+

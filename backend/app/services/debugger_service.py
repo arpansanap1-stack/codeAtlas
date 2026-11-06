@@ -410,3 +410,4 @@ def get_debugger_service() -> DebuggerService:
     if _debugger_service_instance is None:
         _debugger_service_instance = DebuggerService()
     return _debugger_service_instance
+

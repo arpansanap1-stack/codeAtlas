@@ -17,6 +17,7 @@ from app.models.schemas import (
     ArchitectureExplanationResponse,
     ChatRequest,
     CodeChunk,
+    CodebaseHealthResponse,
     DebugRequest,
     DebugResponse,
     FileContentResponse,
@@ -43,6 +44,7 @@ from app.services.embedding_service import get_embedding_service
 from app.services.explanation_service import get_explanation_service
 from app.services.git_service import get_git_service
 from app.services.graph_service import get_graph_service
+from app.services.health_service import get_health_service
 from app.services.impact_service import get_impact_service
 from app.services.journey_service import get_journey_service
 from app.services.onboarding_service import get_onboarding_service
@@ -538,5 +540,29 @@ def get_file_impact_analysis(
 
     impact_service = get_impact_service()
     return impact_service.analyze_impact(repo_id=repo_id, target_file=file_path)
+
+
+@app.get(
+    "/api/repos/{repo_id}/health-metrics",
+    response_model=CodebaseHealthResponse,
+    tags=["Codebase Health"],
+)
+def get_codebase_health_metrics(repo_id: str):
+    """
+    Evaluates repository health, language distribution, module sizes,
+    and detects architectural anti-patterns (circular dependencies, god modules,
+    dead files, tightly coupled components).
+    """
+    db = get_db()
+    repo = db.get_repository(repo_id)
+    if not repo:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Repository '{repo_id}' not found.",
+        )
+
+    health_service = get_health_service()
+    return health_service.evaluate_codebase_health(repo_id=repo_id)
+
 
 

@@ -62,3 +62,4 @@ def test_impact_analysis_direct_and_transitive():
     assert root_res.blast_radius_score == 0
     assert root_res.risk_level == ImpactRiskLevel.LOW
     assert len(root_res.direct_dependents) == 0
+

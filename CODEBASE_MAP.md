@@ -21,6 +21,7 @@
 | **"Journey Through the Codebase" Guided Interactive Tours** | [`backend/app/services/journey_service.py`](file:///c:/Users/arpan/codeAtlas/backend/app/services/journey_service.py)<br>[`frontend/src/components/JourneyPlayer.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/JourneyPlayer.tsx) | `JourneyService.generate_journey`, `JourneyPlayer`, step highlighting |
 | **Debug Runtime Errors & Stack Traces** | [`backend/app/services/debugger_service.py`](file:///c:/Users/arpan/codeAtlas/backend/app/services/debugger_service.py)<br>[`frontend/src/components/DebugModal.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/DebugModal.tsx) | `DebuggerService.diagnose_error`, `DebugModal`, fix diff generator |
 | **"What Happens If I Change This?" Impact Analysis** | [`backend/app/services/impact_service.py`](file:///c:/Users/arpan/codeAtlas/backend/app/services/impact_service.py)<br>[`frontend/src/components/ImpactModal.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/ImpactModal.tsx) | `ImpactService.analyze_impact`, `ImpactModal`, blast radius highlighting |
+| **Codebase Health & Architecture Smells Dashboard** | [`backend/app/services/health_service.py`](file:///c:/Users/arpan/codeAtlas/backend/app/services/health_service.py)<br>[`frontend/src/components/HealthDashboardModal.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/HealthDashboardModal.tsx) | `HealthService.evaluate_codebase_health`, `find_graph_cycles`, `HealthDashboardModal` |
 | **Modify React Flow canvas, node physics, or layout** | [`frontend/src/components/ArchitectureMap.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/ArchitectureMap.tsx)<br>[`frontend/src/components/CustomNode.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/CustomNode.tsx) | `ArchitectureMap`, Dagre layout engine, custom node styling |
 | **Change Monaco editor code viewer / line highlight** | [`frontend/src/components/CodeDrawer.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/CodeDrawer.tsx) | `CodeDrawer`, Monaco `deltaDecorations`, `revealLineInCenter` |
 | **Update Chat drawer UI or citation button handling** | [`frontend/src/components/ChatPanel.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/ChatPanel.tsx) | `ChatPanel`, SSE reader, citation regex parser |
@@ -50,6 +51,7 @@ codeAtlas/
 │   │       ├── explanation_service.py# Multi-level architecture explanation synthesizer
 │   │       ├── git_service.py        # Shallow clone, filter, tree generator
 │   │       ├── graph_service.py      # Import resolver & React Flow graph builder
+│   │       ├── health_service.py     # Codebase health score, cycle detection & architecture smells
 │   │       ├── impact_service.py     # Reverse-dependency blast radius analyzer
 │   │       ├── journey_service.py    # Guided interactive execution pathfinder
 │   │       └── onboarding_service.py # ONBOARDING.md doc generator
@@ -72,6 +74,7 @@ codeAtlas/
 │   │   │   ├── CustomNode.tsx        # Styled node with category badges & degree count
 │   │   │   ├── DebugModal.tsx        # AI Debugger & stack trace root cause modal
 │   │   │   ├── GeminiKeyModal.tsx    # API key setup modal
+│   │   │   ├── HealthDashboardModal.tsx # Codebase health dashboard & architecture smell modal
 │   │   │   ├── ImpactModal.tsx       # 'What happens if I change this?' impact modal
 │   │   │   ├── JourneyPlayer.tsx     # Step-by-step interactive journey controller
 │   │   │   ├── MermaidRenderer.tsx   # Live Mermaid SVG renderer
@@ -123,6 +126,7 @@ Understanding this prevents having to inspect multiple frontend files:
 | `POST` | `/api/repos/{repo_id}/journey` | Generates step-by-step code execution path | `JourneyRequest` / `JourneyResponse` |
 | `POST` | `/api/repos/{repo_id}/debug` | Diagnoses runtime errors and stack traces | `DebugRequest` / `DebugResponse` |
 | `GET` | `/api/repos/{repo_id}/impact` | Computes downstream blast radius & callers | `file_path` / `ImpactAnalysisResponse` |
+| `GET` | `/api/repos/{repo_id}/health-metrics` | Evaluates health score, language breakdown, module sizes & architectural smells | `-` / `CodebaseHealthResponse` |
 
 ---
 
