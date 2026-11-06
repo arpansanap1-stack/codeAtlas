@@ -66,3 +66,4 @@ Every new feature implemented in this codebase must be logged here following the
 | Commit | Date | Tag | Summary |
 | :--- | :--- | :--- | :--- |
 | `6ffa099` | 2026-11-06 | `v1.0.0-baseline` | Initial baseline for CodeAtlas v1.0 (Full stack, AST parsing, Hybrid RAG, React Flow map, Monaco drawer, Onboarding synthesizer). |
+
