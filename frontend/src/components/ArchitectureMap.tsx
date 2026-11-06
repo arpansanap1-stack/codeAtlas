@@ -74,6 +74,8 @@ interface ArchitectureMapProps {
   selectedFile?: string | null;
   activeJourneySteps?: JourneyStep[] | null;
   currentJourneyStepIndex?: number;
+  impactAffectedNodeIds?: string[] | null;
+  impactTargetFile?: string | null;
 }
 
 function FlowCameraController({ focusId }: { focusId?: string | null }) {
@@ -102,6 +104,8 @@ export function ArchitectureMap({
   selectedFile,
   activeJourneySteps,
   currentJourneyStepIndex,
+  impactAffectedNodeIds,
+  impactTargetFile,
 }: ArchitectureMapProps) {
   return (
     <ReactFlowProvider>
@@ -111,6 +115,8 @@ export function ArchitectureMap({
         selectedFile={selectedFile}
         activeJourneySteps={activeJourneySteps}
         currentJourneyStepIndex={currentJourneyStepIndex}
+        impactAffectedNodeIds={impactAffectedNodeIds}
+        impactTargetFile={impactTargetFile}
       />
     </ReactFlowProvider>
   );
@@ -122,6 +128,8 @@ function ArchitectureMapInner({
   selectedFile,
   activeJourneySteps,
   currentJourneyStepIndex,
+  impactAffectedNodeIds,
+  impactTargetFile,
 }: ArchitectureMapProps) {
   const [direction, setDirection] = useState<"LR" | "TB">("LR");
   const [searchQuery, setSearchQuery] = useState("");
@@ -194,6 +202,9 @@ function ArchitectureMapInner({
       });
     }
 
+    const impactSet = new Set(impactAffectedNodeIds || []);
+    const hasImpactActive = !!(impactTargetFile || (impactAffectedNodeIds && impactAffectedNodeIds.length > 0));
+
     return nodes.map((node) => {
       let isDimmed = false;
 
@@ -206,17 +217,25 @@ function ArchitectureMapInner({
         }
       }
 
-      // 2. Journey filter: If journey is active, dim nodes that are not in the journey
-      if (activeJourneySteps && activeJourneySteps.length > 0) {
+      // 2. Impact Blast Radius filter
+      if (hasImpactActive) {
+        if (node.id !== impactTargetFile && !impactSet.has(node.id)) {
+          isDimmed = true;
+        }
+      }
+      // 3. Journey filter: If journey is active, dim nodes that are not in the journey
+      else if (activeJourneySteps && activeJourneySteps.length > 0) {
         if (!journeyStepMap.has(node.id)) {
           isDimmed = true;
         }
       } else if (!isDimmed && connectedNodeIds && !connectedNodeIds.has(node.id)) {
-        // 3. Focus connected filter
+        // 4. Focus connected filter
         isDimmed = true;
       }
 
       const stepNum = journeyStepMap.get(node.id);
+      const isTarget = node.id === impactTargetFile;
+      const isAffected = impactSet.has(node.id);
 
       return {
         ...node,
@@ -225,10 +244,12 @@ function ArchitectureMapInner({
           ...node.data,
           isDimmed,
           journeyStepNumber: stepNum,
+          isImpactTarget: isTarget,
+          isImpactAffected: isAffected,
         },
       };
     });
-  }, [nodes, searchQuery, connectedNodeIds, selectedFile, activeJourneySteps]);
+  }, [nodes, searchQuery, connectedNodeIds, selectedFile, activeJourneySteps, impactAffectedNodeIds, impactTargetFile]);
 
   // Apply Highlights to Edges
   const displayEdges = useMemo(() => {
@@ -241,24 +262,35 @@ function ArchitectureMapInner({
       }
     }
 
+    const impactSet = new Set(impactAffectedNodeIds || []);
+
     return edges.map((edge) => {
       const isJourneyEdge =
         journeyEdges.has(`${edge.source}->${edge.target}`) ||
         journeyEdges.has(edge.id);
+
+      const isImpactEdge =
+        impactTargetFile &&
+        (edge.target === impactTargetFile || edge.source === impactTargetFile || impactSet.has(edge.source) || impactSet.has(edge.target));
+
       const isConnected =
         activeFocusId &&
         (edge.source === activeFocusId || edge.target === activeFocusId);
 
-      const isHighlighted = isJourneyEdge || isConnected;
+      const isHighlighted = isJourneyEdge || isImpactEdge || isConnected;
 
       return {
         ...edge,
         animated: !!isHighlighted,
         style: {
-          stroke: isJourneyEdge ? "#38bdf8" : isConnected ? "#38bdf8" : "#3f3f46",
-          strokeWidth: isJourneyEdge ? 3 : isConnected ? 2.5 : 1.5,
+          stroke: isImpactEdge ? "#f59e0b" : isJourneyEdge ? "#38bdf8" : isConnected ? "#38bdf8" : "#3f3f46",
+          strokeWidth: isImpactEdge ? 2.5 : isJourneyEdge ? 3 : isConnected ? 2.5 : 1.5,
           opacity:
-            activeJourneySteps && activeJourneySteps.length > 0
+            (impactAffectedNodeIds && impactAffectedNodeIds.length > 0)
+              ? isImpactEdge
+                ? 1
+                : 0.12
+              : activeJourneySteps && activeJourneySteps.length > 0
               ? isJourneyEdge
                 ? 1
                 : 0.12
@@ -270,11 +302,11 @@ function ArchitectureMapInner({
         },
         markerEnd: {
           type: MarkerType.ArrowClosed,
-          color: isHighlighted ? "#38bdf8" : "#52525b",
+          color: isImpactEdge ? "#f59e0b" : isHighlighted ? "#38bdf8" : "#52525b",
         },
       };
     });
-  }, [edges, activeFocusId, activeJourneySteps]);
+  }, [edges, activeFocusId, activeJourneySteps, impactAffectedNodeIds, impactTargetFile]);
 
   const onNodeClick = useCallback(
     (_: React.MouseEvent, node: Node) => {

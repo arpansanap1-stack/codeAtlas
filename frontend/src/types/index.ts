@@ -124,4 +124,46 @@ export interface SuggestedJourneysResponse {
   journeys: SuggestedJourneyItem[];
 }
 
+export interface SuspiciousSnippet {
+  file_path: string;
+  start_line: number;
+  end_line: number;
+  symbol_name?: string | null;
+  reason: string;
+  code_snippet: string;
+}
+
+export interface DebugResponse {
+  repo_id: string;
+  error_type: string;
+  root_cause_analysis: string;
+  execution_path_explanation: string;
+  suspicious_locations: SuspiciousSnippet[];
+  suggested_fix: string;
+  confidence_score: number;
+}
+
+export type ImpactRiskLevel = "low" | "moderate" | "high" | "critical";
+
+export interface DependentModule {
+  file_path: string;
+  depth: number;
+  is_direct: boolean;
+  import_symbol?: string | null;
+}
+
+export interface ImpactAnalysisResponse {
+  repo_id: string;
+  target_file: string;
+  risk_level: ImpactRiskLevel;
+  blast_radius_score: number;
+  direct_dependents: DependentModule[];
+  indirect_dependents: DependentModule[];
+  all_affected_file_paths: string[];
+  summary: string;
+  affected_subsystems: string[];
+  recommendations: string[];
+}
+
+
 

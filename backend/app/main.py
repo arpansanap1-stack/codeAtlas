@@ -17,12 +17,15 @@ from app.models.schemas import (
     ArchitectureExplanationResponse,
     ChatRequest,
     CodeChunk,
+    DebugRequest,
+    DebugResponse,
     FileContentResponse,
     GeminiKeyRequest,
     GeminiKeyResponse,
     GeminiSettingsResponse,
     GraphData,
     HealthResponse,
+    ImpactAnalysisResponse,
     JourneyRequest,
     JourneyResponse,
     OnboardingDocResponse,
@@ -35,10 +38,12 @@ from app.models.schemas import (
 )
 from app.services.ast_service import get_ast_service
 from app.services.chat_service import get_chat_service
+from app.services.debugger_service import get_debugger_service
 from app.services.embedding_service import get_embedding_service
 from app.services.explanation_service import get_explanation_service
 from app.services.git_service import get_git_service
 from app.services.graph_service import get_graph_service
+from app.services.impact_service import get_impact_service
 from app.services.journey_service import get_journey_service
 from app.services.onboarding_service import get_onboarding_service
 
@@ -481,4 +486,57 @@ def generate_codebase_journey(repo_id: str, payload: JourneyRequest):
 
     journey_service = get_journey_service()
     return journey_service.generate_journey(repo_id=repo_id, topic=payload.topic)
+
+
+@app.post(
+    "/api/repos/{repo_id}/debug",
+    response_model=DebugResponse,
+    tags=["AI Debugging"],
+)
+def debug_repository_error(repo_id: str, payload: DebugRequest):
+    """
+    Parses runtime errors and stack traces, maps them to AST declarations,
+    explains root causes, pinpoints suspicious lines, and suggests code diff fixes.
+    """
+    db = get_db()
+    repo = db.get_repository(repo_id)
+    if not repo:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Repository '{repo_id}' not found.",
+        )
+
+    debugger_service = get_debugger_service()
+    return debugger_service.diagnose_error(
+        repo_id=repo_id,
+        error_message=payload.error_message,
+        context_hint=payload.context_hint,
+    )
+
+
+@app.get(
+    "/api/repos/{repo_id}/impact",
+    response_model=ImpactAnalysisResponse,
+    tags=["Impact Analysis"],
+)
+def get_file_impact_analysis(
+    repo_id: str,
+    file_path: str = Query(..., description="Target file path to evaluate blast radius for"),
+):
+    """
+    Performs 'What Happens If I Change This?' impact analysis:
+    Computes direct and transitive dependents, risk severity score,
+    and affected subsystems using reverse graph dependency traversal.
+    """
+    db = get_db()
+    repo = db.get_repository(repo_id)
+    if not repo:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Repository '{repo_id}' not found.",
+        )
+
+    impact_service = get_impact_service()
+    return impact_service.analyze_impact(repo_id=repo_id, target_file=file_path)
+
 

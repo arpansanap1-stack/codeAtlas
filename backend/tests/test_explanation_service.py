@@ -70,3 +70,4 @@ def test_architecture_explanation_levels():
     # 4. Test caching
     cached_res = service.explain_architecture(repo_id, level="beginner")
     assert cached_res.markdown_content == beg_res.markdown_content
+

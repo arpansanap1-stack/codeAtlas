@@ -297,3 +297,4 @@ export function ArchitectureExplanationModal({
     </div>
   );
 }
+

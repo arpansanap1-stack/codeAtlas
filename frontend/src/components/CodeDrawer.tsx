@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import Editor, { OnMount } from "@monaco-editor/react";
-import { X, ExternalLink, ArrowDownRight, ArrowUpRight, Copy, Check, Loader2 } from "lucide-react";
+import { X, ExternalLink, ArrowDownRight, ArrowUpRight, Copy, Check, Loader2, AlertOctagon } from "lucide-react";
 import { getFileContent } from "@/lib/api";
 import { GraphData } from "@/types";
 
@@ -13,6 +13,7 @@ interface CodeDrawerProps {
   onClose: () => void;
   onNavigateFile: (path: string) => void;
   targetLineRange?: [number, number] | null;
+  onOpenImpactAnalysis?: (filePath: string) => void;
 }
 
 function getLanguageFromPath(filePath: string): string {
@@ -51,6 +52,7 @@ export function CodeDrawer({
   onClose,
   onNavigateFile,
   targetLineRange,
+  onOpenImpactAnalysis,
 }: CodeDrawerProps) {
   const [content, setContent] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -180,6 +182,17 @@ export function CodeDrawer({
         </div>
 
         <div className="flex items-center gap-2">
+          {onOpenImpactAnalysis && filePath && (
+            <button
+              onClick={() => onOpenImpactAnalysis(filePath)}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-amber-500/10 hover:bg-amber-500/20 text-amber-400 border border-amber-500/30 text-[11px] font-mono transition-colors"
+              title="Run 'What Happens If I Change This?' Impact Analysis"
+            >
+              <AlertOctagon className="w-3.5 h-3.5" />
+              <span>Impact Analysis</span>
+            </button>
+          )}
+
           <button
             onClick={handleCopy}
             className="p-1.5 rounded-md text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors"

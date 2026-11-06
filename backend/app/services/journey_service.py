@@ -390,3 +390,4 @@ def get_journey_service() -> JourneyService:
     if _journey_service_instance is None:
         _journey_service_instance = JourneyService()
     return _journey_service_instance
+

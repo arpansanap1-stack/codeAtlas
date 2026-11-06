@@ -19,6 +19,8 @@
 | **Update Onboarding markdown synthesis or Mermaid** | [`backend/app/services/onboarding_service.py`](file:///c:/Users/arpan/codeAtlas/backend/app/services/onboarding_service.py)<br>[`frontend/src/components/OnboardingView.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/OnboardingView.tsx) | `generate_onboarding_documentation`, `MermaidRenderer` |
 | **Multi-level Architecture Explanation (Beginner/Inter/Expert)** | [`backend/app/services/explanation_service.py`](file:///c:/Users/arpan/codeAtlas/backend/app/services/explanation_service.py)<br>[`frontend/src/components/ArchitectureExplanationModal.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/ArchitectureExplanationModal.tsx) | `ExplanationService.explain_architecture`, `ArchitectureExplanationModal` |
 | **"Journey Through the Codebase" Guided Interactive Tours** | [`backend/app/services/journey_service.py`](file:///c:/Users/arpan/codeAtlas/backend/app/services/journey_service.py)<br>[`frontend/src/components/JourneyPlayer.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/JourneyPlayer.tsx) | `JourneyService.generate_journey`, `JourneyPlayer`, step highlighting |
+| **Debug Runtime Errors & Stack Traces** | [`backend/app/services/debugger_service.py`](file:///c:/Users/arpan/codeAtlas/backend/app/services/debugger_service.py)<br>[`frontend/src/components/DebugModal.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/DebugModal.tsx) | `DebuggerService.diagnose_error`, `DebugModal`, fix diff generator |
+| **"What Happens If I Change This?" Impact Analysis** | [`backend/app/services/impact_service.py`](file:///c:/Users/arpan/codeAtlas/backend/app/services/impact_service.py)<br>[`frontend/src/components/ImpactModal.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/ImpactModal.tsx) | `ImpactService.analyze_impact`, `ImpactModal`, blast radius highlighting |
 | **Modify React Flow canvas, node physics, or layout** | [`frontend/src/components/ArchitectureMap.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/ArchitectureMap.tsx)<br>[`frontend/src/components/CustomNode.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/CustomNode.tsx) | `ArchitectureMap`, Dagre layout engine, custom node styling |
 | **Change Monaco editor code viewer / line highlight** | [`frontend/src/components/CodeDrawer.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/CodeDrawer.tsx) | `CodeDrawer`, Monaco `deltaDecorations`, `revealLineInCenter` |
 | **Update Chat drawer UI or citation button handling** | [`frontend/src/components/ChatPanel.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/ChatPanel.tsx) | `ChatPanel`, SSE reader, citation regex parser |
@@ -43,10 +45,12 @@ codeAtlas/
 │   │   └── services/
 │   │       ├── ast_service.py        # Tree-sitter & Python AST chunker
 │   │       ├── chat_service.py       # SSE streaming RAG Q&A engine
+│   │       ├── debugger_service.py   # AI Error explorer & root-cause analyzer
 │   │       ├── embedding_service.py  # Gemini text-embedding-004 embedder
 │   │       ├── explanation_service.py# Multi-level architecture explanation synthesizer
 │   │       ├── git_service.py        # Shallow clone, filter, tree generator
 │   │       ├── graph_service.py      # Import resolver & React Flow graph builder
+│   │       ├── impact_service.py     # Reverse-dependency blast radius analyzer
 │   │       ├── journey_service.py    # Guided interactive execution pathfinder
 │   │       └── onboarding_service.py # ONBOARDING.md doc generator
 │   ├── tests/                # Pytest unit & integration test suite
@@ -66,7 +70,9 @@ codeAtlas/
 │   │   │   ├── ChatPanel.tsx         # SSE streaming chat with citation pills
 │   │   │   ├── CodeDrawer.tsx        # Monaco editor slide-over with line highlights
 │   │   │   ├── CustomNode.tsx        # Styled node with category badges & degree count
+│   │   │   ├── DebugModal.tsx        # AI Debugger & stack trace root cause modal
 │   │   │   ├── GeminiKeyModal.tsx    # API key setup modal
+│   │   │   ├── ImpactModal.tsx       # 'What happens if I change this?' impact modal
 │   │   │   ├── JourneyPlayer.tsx     # Step-by-step interactive journey controller
 │   │   │   ├── MermaidRenderer.tsx   # Live Mermaid SVG renderer
 │   │   │   └── OnboardingView.tsx    # Onboarding documentation renderer & export
@@ -115,6 +121,8 @@ Understanding this prevents having to inspect multiple frontend files:
 | `GET` | `/api/repos/{repo_id}/explanation` | Generates multi-level architecture explanation | `level` / `ArchitectureExplanationResponse` |
 | `GET` | `/api/repos/{repo_id}/journeys` | Returns suggested interactive journeys | `-` / `SuggestedJourneysResponse` |
 | `POST` | `/api/repos/{repo_id}/journey` | Generates step-by-step code execution path | `JourneyRequest` / `JourneyResponse` |
+| `POST` | `/api/repos/{repo_id}/debug` | Diagnoses runtime errors and stack traces | `DebugRequest` / `DebugResponse` |
+| `GET` | `/api/repos/{repo_id}/impact` | Computes downstream blast radius & callers | `file_path` / `ImpactAnalysisResponse` |
 
 ---
 

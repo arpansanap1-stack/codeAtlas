@@ -1,11 +1,13 @@
 import {
   ArchitectureExplanationResponse,
   ArchitectureLevel,
+  DebugResponse,
   FileContentResponse,
   GeminiKeyResponse,
   GeminiSettingsResponse,
   GraphData,
   HealthResponse,
+  ImpactAnalysisResponse,
   JourneyResponse,
   OnboardingDocResponse,
   RepoIngestResponse,
@@ -130,5 +132,41 @@ export async function generateJourney(
   }
   return res.json();
 }
+
+export async function debugError(
+  repoId: string,
+  errorMessage: string,
+  contextHint?: string
+): Promise<DebugResponse> {
+  const res = await fetch(`${API_BASE}/api/repos/${repoId}/debug`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      error_message: errorMessage,
+      context_hint: contextHint || null,
+    }),
+  });
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({ detail: "Failed to diagnose error" }));
+    throw new Error(errorData.detail || "Failed to analyze error");
+  }
+  return res.json();
+}
+
+export async function getImpactAnalysis(
+  repoId: string,
+  filePath: string
+): Promise<ImpactAnalysisResponse> {
+  const params = new URLSearchParams({ file_path: filePath });
+  const res = await fetch(`${API_BASE}/api/repos/${repoId}/impact?${params}`);
+
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({ detail: "Failed to analyze impact" }));
+    throw new Error(errorData.detail || "Failed to calculate impact analysis");
+  }
+  return res.json();
+}
+
 
 

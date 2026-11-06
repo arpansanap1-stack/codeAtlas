@@ -85,3 +85,4 @@ def test_journey_suggestions_and_generation():
     cached_journey = service.generate_journey(repo_id, "How does authentication work?")
     assert len(cached_journey.steps) == len(journey.steps)
     assert cached_journey.steps[0].file_path == journey.steps[0].file_path
+

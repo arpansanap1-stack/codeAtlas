@@ -72,6 +72,51 @@ Every new feature implemented in this codebase must be logged here following the
 - **Notes / Breaking Changes:**
   Adds GET `/api/repos/{repo_id}/journeys` and POST `/api/repos/{repo_id}/journey`.
 
+### [FEAT-003] AI Debugging / Error Explorer
+- **Status:** [COMPLETED]
+- **Created Date:** 2026-11-06
+- **Target Modules:**
+  - `backend/app/models/schemas.py`
+  - `backend/app/services/debugger_service.py`
+  - `backend/app/main.py`
+  - `backend/tests/test_debugger_service.py`
+  - `frontend/src/types/index.ts`
+  - `frontend/src/lib/api.ts`
+  - `frontend/src/components/DebugModal.tsx`
+  - `frontend/src/app/repo/[id]/page.tsx`
+- **Description & User Value:**
+  Allows developers to paste runtime errors or stack traces (e.g., TypeError, Python tracebacks, 500 errors). CodeAtlas parses the error, performs hybrid search across the repo, identifies the suspect code lines with clickable citations, traces the causal execution path, and proposes actionable fixes with code diffs.
+- **Verification Commands:**
+  - Backend: `backend\.venv\Scripts\pytest backend/tests/test_debugger_service.py -v` (PASSED)
+  - Frontend: `frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit` (0 errors)
+- **Git Commit:** Pending
+- **Notes / Breaking Changes:**
+  Adds POST `/api/repos/{repo_id}/debug`.
+
+### [FEAT-004] "What Happens If I Change This?" Impact Analysis Engine
+- **Status:** [COMPLETED]
+- **Created Date:** 2026-11-06
+- **Target Modules:**
+  - `backend/app/models/schemas.py`
+  - `backend/app/services/impact_service.py`
+  - `backend/app/main.py`
+  - `backend/tests/test_impact_service.py`
+  - `frontend/src/types/index.ts`
+  - `frontend/src/lib/api.ts`
+  - `frontend/src/components/ImpactModal.tsx`
+  - `frontend/src/components/CodeDrawer.tsx`
+  - `frontend/src/components/ArchitectureMap.tsx`
+  - `frontend/src/components/CustomNode.tsx`
+  - `frontend/src/app/repo/[id]/page.tsx`
+- **Description & User Value:**
+  Enables developers to select any module or function and run an Impact Analysis. Calculates direct importers, transitive downstream blast radius, risk severity score, and affected subsystems. Visually highlights the entire blast radius tree on the React Flow map in glowing amber/rose while dimming safe modules.
+- **Verification Commands:**
+  - Backend: `backend\.venv\Scripts\pytest backend/tests/test_impact_service.py -v` (PASSED)
+  - Frontend: `frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit` (0 errors)
+- **Git Commit:** Pending
+- **Notes / Breaking Changes:**
+  Adds GET `/api/repos/{repo_id}/impact?file_path=...`.
+
 <!-- Add new feature blocks below following this exact template -->
 
 ### 📝 Feature Template (Copy & Paste for New Features)
@@ -109,8 +154,9 @@ Every new feature implemented in this codebase must be logged here following the
 
 | Commit | Date | Tag | Summary |
 | :--- | :--- | :--- | :--- |
-| `HEAD` | 2026-11-06 | - | feat: implement AI architecture explanation mode & interactive codebase journeys |
-| `5c7e3a7` | 2026-11-06 | - | chore: add *.tsbuildinfo to .gitignore |
+| `HEAD` | 2026-11-06 | - | feat: implement AI Debugger error explorer & 'What Happens If I Change This?' impact analysis |
+| `a0080f1` | 2026-11-06 | - | docs: record commit hash c28a53b in feature tracker |
+| `c28a53b` | 2026-11-06 | - | feat: implement AI architecture explanation mode & interactive codebase journeys |
 | `26d1e57` | 2026-11-06 | - | chore: specify fast local tsc command for frontend verification |
 | `8c14b8d` | 2026-11-06 | - | docs: establish feature tracker, codebase index map, and incremental workflow |
 | `6ffa099` | 2026-11-06 | `v1.0.0-baseline` | Initial baseline for CodeAtlas v1.0 (Full stack, AST parsing, Hybrid RAG, React Flow map, Monaco drawer, Onboarding synthesizer). |

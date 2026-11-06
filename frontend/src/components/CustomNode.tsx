@@ -12,6 +12,8 @@ export interface CustomNodeData extends Record<string, unknown> {
   summary?: string;
   isDimmed?: boolean;
   journeyStepNumber?: number;
+  isImpactTarget?: boolean;
+  isImpactAffected?: boolean;
 }
 
 function getNodeCategoryStyle(filePath: string, folder: string) {
@@ -105,6 +107,8 @@ export const CustomNode = memo(function CustomNode({
         "relative group min-w-[210px] max-w-[280px] rounded-lg bg-zinc-900/90 backdrop-blur-sm p-3 border transition-all duration-200 shadow-md",
         style.border,
         selected && "ring-2 ring-sky-400/80 border-sky-400 shadow-lg shadow-sky-500/10",
+        data.isImpactTarget && "ring-2 ring-amber-400 border-amber-400 shadow-lg shadow-amber-500/20",
+        data.isImpactAffected && "ring-1 ring-rose-500/80 border-rose-500/80 shadow-md shadow-rose-500/10",
         data.isDimmed && "opacity-25 grayscale"
       )}
     >
@@ -112,6 +116,20 @@ export const CustomNode = memo(function CustomNode({
       {typeof data.journeyStepNumber === "number" && (
         <div className="absolute -top-2.5 -right-2.5 px-2 py-0.5 rounded-full bg-sky-500 text-zinc-950 font-bold font-mono text-[10px] shadow-lg shadow-sky-500/30 flex items-center gap-1 z-10 animate-bounce">
           <span>Step {data.journeyStepNumber}</span>
+        </div>
+      )}
+
+      {/* Impact Target Badge */}
+      {data.isImpactTarget && (
+        <div className="absolute -top-2.5 -right-2.5 px-2 py-0.5 rounded-full bg-amber-500 text-zinc-950 font-bold font-mono text-[10px] shadow-lg shadow-amber-500/30 flex items-center gap-1 z-10">
+          <span>Target</span>
+        </div>
+      )}
+
+      {/* Impact Affected Badge */}
+      {data.isImpactAffected && !data.isImpactTarget && (
+        <div className="absolute -top-2.5 -right-2.5 px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/40 font-mono text-[10px] flex items-center gap-1 z-10">
+          <span>Downstream</span>
         </div>
       )}
 
