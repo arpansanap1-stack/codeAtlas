@@ -178,7 +178,7 @@ Every new feature implemented in this codebase must be logged here following the
 - **Verification Commands:**
   - Backend: `backend\.venv\Scripts\pytest backend/tests/test_git_history_service.py -v` (2 passed)
   - Frontend: `frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit` (0 errors)
-- **Git Commit:** Pending
+- **Git Commit:** `0096ccf`
 - **Notes / Breaking Changes:**
   Adds GET `/api/repos/{repo_id}/git-history?file_path=...`.
 
@@ -200,7 +200,7 @@ Every new feature implemented in this codebase must be logged here following the
 - **Verification Commands:**
   - Backend: `backend\.venv\Scripts\pytest backend/tests/test_chat_selected.py -v` (2 passed)
   - Frontend: `frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit` (0 errors)
-- **Git Commit:** Pending
+- **Git Commit:** `0096ccf`
 - **Notes / Breaking Changes:**
   Enhances POST `/api/repos/{repo_id}/chat` with optional `selected_files` array.
 
@@ -215,7 +215,7 @@ Every new feature implemented in this codebase must be logged here following the
   Enables developers and technical leads to export architecture snapshots in multiple formats: high-resolution SVG/PNG of the interactive React Flow canvas, standalone Markdown documentation reports with embedded Mermaid architecture diagrams, and targeted module summaries.
 - **Verification Commands:**
   - Frontend: `frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit` (0 errors)
-- **Git Commit:** Pending
+- **Git Commit:** `0096ccf`
 - **Notes / Breaking Changes:**
   Adds visual snapshot modal and vector SVG/PNG canvas export capability.
 
@@ -244,11 +244,10 @@ Every new feature implemented in this codebase must be logged here following the
 ## 📌 Implementation Queue
 
 ### Upcoming Candidate Features (Backlog)
-- [ ] **[FEAT-001] Export Architecture Map as SVG/PNG**: One-click high-resolution visual export of the React Flow canvas.
-- [ ] **[FEAT-002] Multi-Branch & Tag Selector**: Ingest specific branches (`develop`, `staging`) or release tags instead of only the default branch.
-- [ ] **[FEAT-003] Language Filter on Architecture Canvas**: Filter nodes by language (e.g. show only Python files, or only TypeScript/TSX).
-- [ ] **[FEAT-004] Enhanced Call Graph Resolution**: Deepen AST analysis to detect function-to-function invocation edges across files.
-- [ ] **[FEAT-005] Chat History Persistence**: Store multi-turn chat sessions in PostgreSQL/LocalStorage for persistent repo exploration.
+- [ ] **[FEAT-010] Multi-Branch & Tag Selector**: Ingest specific branches (`develop`, `staging`) or release tags instead of only the default branch.
+- [ ] **[FEAT-011] Language Filter on Architecture Canvas**: Filter nodes by language (e.g. show only Python files, or only TypeScript/TSX).
+- [ ] **[FEAT-012] Enhanced Call Graph Resolution**: Deepen AST analysis to detect function-to-function invocation edges across files.
+- [ ] **[FEAT-013] Chat History Persistence**: Store multi-turn chat sessions in PostgreSQL/LocalStorage for persistent repo exploration.
 
 ---
 
@@ -256,6 +255,7 @@ Every new feature implemented in this codebase must be logged here following the
 
 | Commit | Date | Tag | Summary |
 | :--- | :--- | :--- | :--- |
+| `0096ccf` | 2026-11-06 | - | feat: implement Git History Intelligence, Chat With Selected Code, and Architecture Snapshots |
 | `82e339e` | 2026-11-06 | - | feat: implement Codebase Health Dashboard and Architecture Smell Detection |
 | `055c470` | 2026-11-06 | - | feat: implement AI Debugger error explorer & 'What Happens If I Change This?' impact analysis |
 | `a0080f1` | 2026-11-06 | - | docs: record commit hash c28a53b in feature tracker |
