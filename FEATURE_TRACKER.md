@@ -28,6 +28,50 @@ Every new feature implemented in this codebase must be logged here following the
 
 ## 🚀 Incremental Features (v1.1+)
 
+### [FEAT-001] AI Architecture Explanation Mode (Beginner / Intermediate / Expert)
+- **Status:** [COMPLETED]
+- **Created Date:** 2026-11-06
+- **Target Modules:**
+  - `backend/app/models/schemas.py`
+  - `backend/app/services/explanation_service.py`
+  - `backend/app/main.py`
+  - `backend/tests/test_explanation_service.py`
+  - `frontend/src/types/index.ts`
+  - `frontend/src/lib/api.ts`
+  - `frontend/src/components/ArchitectureExplanationModal.tsx`
+  - `frontend/src/app/repo/[id]/page.tsx`
+- **Description & User Value:**
+  Enables users to click "Explain this architecture to me" with one-click toggles between Beginner, Intermediate, and Expert levels. Generates project overview, entry points, data flow, key modules, component communication, and first-step advice with clickable code citations.
+- **Verification Commands:**
+  - Backend: `backend\.venv\Scripts\pytest backend/tests/test_explanation_service.py -v` (PASSED)
+  - Frontend: `frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit` (0 errors)
+- **Git Commit:** Pending
+- **Notes / Breaking Changes:**
+  Adds GET `/api/repos/{repo_id}/explanation?level={beginner|intermediate|expert}`.
+
+### [FEAT-002] "Journey Through the Codebase" Interactive Guided Tours
+- **Status:** [COMPLETED]
+- **Created Date:** 2026-11-06
+- **Target Modules:**
+  - `backend/app/models/schemas.py`
+  - `backend/app/services/journey_service.py`
+  - `backend/app/main.py`
+  - `backend/tests/test_journey_service.py`
+  - `frontend/src/types/index.ts`
+  - `frontend/src/lib/api.ts`
+  - `frontend/src/components/JourneyPlayer.tsx`
+  - `frontend/src/components/ArchitectureMap.tsx`
+  - `frontend/src/components/CustomNode.tsx`
+  - `frontend/src/app/repo/[id]/page.tsx`
+- **Description & User Value:**
+  Allows users to query any workflow (e.g. "How does authentication work?", "Ingestion Pipeline") or pick preset journeys. Generates an interactive step-by-step path (UI → Route → Service → Database). Users can navigate Next → Next → Prev, which automatically pans the architecture canvas, highlights path nodes & animated edges, and slides open the Monaco drawer with the exact code lines highlighted.
+- **Verification Commands:**
+  - Backend: `backend\.venv\Scripts\pytest backend/tests/test_journey_service.py -v` (PASSED)
+  - Frontend: `frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit` (0 errors)
+- **Git Commit:** Pending
+- **Notes / Breaking Changes:**
+  Adds GET `/api/repos/{repo_id}/journeys` and POST `/api/repos/{repo_id}/journey`.
+
 <!-- Add new feature blocks below following this exact template -->
 
 ### 📝 Feature Template (Copy & Paste for New Features)
@@ -65,5 +109,9 @@ Every new feature implemented in this codebase must be logged here following the
 
 | Commit | Date | Tag | Summary |
 | :--- | :--- | :--- | :--- |
+| `HEAD` | 2026-11-06 | - | feat: implement AI architecture explanation mode & interactive codebase journeys |
+| `5c7e3a7` | 2026-11-06 | - | chore: add *.tsbuildinfo to .gitignore |
+| `26d1e57` | 2026-11-06 | - | chore: specify fast local tsc command for frontend verification |
+| `8c14b8d` | 2026-11-06 | - | docs: establish feature tracker, codebase index map, and incremental workflow |
 | `6ffa099` | 2026-11-06 | `v1.0.0-baseline` | Initial baseline for CodeAtlas v1.0 (Full stack, AST parsing, Hybrid RAG, React Flow map, Monaco drawer, Onboarding synthesizer). |
 

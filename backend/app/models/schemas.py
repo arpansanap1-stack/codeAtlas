@@ -181,3 +181,50 @@ class GeminiSettingsResponse(BaseModel):
     chat_model: str
     embedding_model: str
     masked_key: Optional[str] = None
+
+
+class ArchitectureExplanationResponse(BaseModel):
+    repo_id: str
+    level: str
+    title: str
+    markdown_content: str
+    updated_at: datetime
+
+
+class JourneyStep(BaseModel):
+    step_number: int
+    title: str
+    file_path: str
+    symbol_name: Optional[str] = None
+    start_line: int
+    end_line: int
+    explanation: str
+    outgoing_target: Optional[str] = None
+
+
+class JourneyRequest(BaseModel):
+    topic: str = Field(
+        ...,
+        min_length=2,
+        max_length=200,
+        description="Flow or question to trace, e.g. 'Authentication Flow' or 'How does ingestion work?'",
+    )
+
+
+class JourneyResponse(BaseModel):
+    repo_id: str
+    topic: str
+    summary: str
+    steps: List[JourneyStep]
+
+
+class SuggestedJourneyItem(BaseModel):
+    topic: str
+    description: str
+    category: str
+
+
+class SuggestedJourneysResponse(BaseModel):
+    repo_id: str
+    journeys: List[SuggestedJourneyItem]
+

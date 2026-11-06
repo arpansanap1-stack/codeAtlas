@@ -18,7 +18,7 @@ import {
 import dagre from "dagre";
 import { Search, LayoutGrid, ArrowRight, ArrowDown } from "lucide-react";
 import { CustomNode, CustomNodeData } from "./CustomNode";
-import { GraphData } from "@/types";
+import { GraphData, JourneyStep } from "@/types";
 
 const NODE_WIDTH = 240;
 const NODE_HEIGHT = 65;
@@ -72,6 +72,8 @@ interface ArchitectureMapProps {
   graphData: GraphData;
   onSelectFile: (filePath: string) => void;
   selectedFile?: string | null;
+  activeJourneySteps?: JourneyStep[] | null;
+  currentJourneyStepIndex?: number;
 }
 
 function FlowCameraController({ focusId }: { focusId?: string | null }) {
@@ -98,6 +100,8 @@ export function ArchitectureMap({
   graphData,
   onSelectFile,
   selectedFile,
+  activeJourneySteps,
+  currentJourneyStepIndex,
 }: ArchitectureMapProps) {
   return (
     <ReactFlowProvider>
@@ -105,6 +109,8 @@ export function ArchitectureMap({
         graphData={graphData}
         onSelectFile={onSelectFile}
         selectedFile={selectedFile}
+        activeJourneySteps={activeJourneySteps}
+        currentJourneyStepIndex={currentJourneyStepIndex}
       />
     </ReactFlowProvider>
   );
@@ -114,6 +120,8 @@ function ArchitectureMapInner({
   graphData,
   onSelectFile,
   selectedFile,
+  activeJourneySteps,
+  currentJourneyStepIndex,
 }: ArchitectureMapProps) {
   const [direction, setDirection] = useState<"LR" | "TB">("LR");
   const [searchQuery, setSearchQuery] = useState("");
@@ -179,6 +187,13 @@ function ArchitectureMapInner({
   const displayNodes = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
 
+    const journeyStepMap = new Map<string, number>();
+    if (activeJourneySteps && activeJourneySteps.length > 0) {
+      activeJourneySteps.forEach((s) => {
+        journeyStepMap.set(s.file_path, s.step_number);
+      });
+    }
+
     return nodes.map((node) => {
       let isDimmed = false;
 
@@ -191,10 +206,17 @@ function ArchitectureMapInner({
         }
       }
 
-      // 2. Focus connected filter
-      if (!isDimmed && connectedNodeIds && !connectedNodeIds.has(node.id)) {
+      // 2. Journey filter: If journey is active, dim nodes that are not in the journey
+      if (activeJourneySteps && activeJourneySteps.length > 0) {
+        if (!journeyStepMap.has(node.id)) {
+          isDimmed = true;
+        }
+      } else if (!isDimmed && connectedNodeIds && !connectedNodeIds.has(node.id)) {
+        // 3. Focus connected filter
         isDimmed = true;
       }
+
+      const stepNum = journeyStepMap.get(node.id);
 
       return {
         ...node,
@@ -202,33 +224,57 @@ function ArchitectureMapInner({
         data: {
           ...node.data,
           isDimmed,
+          journeyStepNumber: stepNum,
         },
       };
     });
-  }, [nodes, searchQuery, connectedNodeIds, selectedFile]);
+  }, [nodes, searchQuery, connectedNodeIds, selectedFile, activeJourneySteps]);
 
   // Apply Highlights to Edges
   const displayEdges = useMemo(() => {
+    const journeyEdges = new Set<string>();
+    if (activeJourneySteps && activeJourneySteps.length > 1) {
+      for (let i = 0; i < activeJourneySteps.length - 1; i++) {
+        const src = activeJourneySteps[i].file_path;
+        const tgt = activeJourneySteps[i + 1].file_path;
+        journeyEdges.add(`${src}->${tgt}`);
+      }
+    }
+
     return edges.map((edge) => {
+      const isJourneyEdge =
+        journeyEdges.has(`${edge.source}->${edge.target}`) ||
+        journeyEdges.has(edge.id);
       const isConnected =
         activeFocusId &&
         (edge.source === activeFocusId || edge.target === activeFocusId);
 
+      const isHighlighted = isJourneyEdge || isConnected;
+
       return {
         ...edge,
-        animated: !!isConnected,
+        animated: !!isHighlighted,
         style: {
-          stroke: isConnected ? "#38bdf8" : "#3f3f46",
-          strokeWidth: isConnected ? 2.5 : 1.5,
-          opacity: activeFocusId ? (isConnected ? 1 : 0.15) : 0.7,
+          stroke: isJourneyEdge ? "#38bdf8" : isConnected ? "#38bdf8" : "#3f3f46",
+          strokeWidth: isJourneyEdge ? 3 : isConnected ? 2.5 : 1.5,
+          opacity:
+            activeJourneySteps && activeJourneySteps.length > 0
+              ? isJourneyEdge
+                ? 1
+                : 0.12
+              : activeFocusId
+              ? isConnected
+                ? 1
+                : 0.15
+              : 0.7,
         },
         markerEnd: {
           type: MarkerType.ArrowClosed,
-          color: isConnected ? "#38bdf8" : "#52525b",
+          color: isHighlighted ? "#38bdf8" : "#52525b",
         },
       };
     });
-  }, [edges, activeFocusId]);
+  }, [edges, activeFocusId, activeJourneySteps]);
 
   const onNodeClick = useCallback(
     (_: React.MouseEvent, node: Node) => {

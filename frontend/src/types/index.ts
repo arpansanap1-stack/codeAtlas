@@ -85,3 +85,43 @@ export interface GeminiKeyResponse {
   embedding_model: string;
 }
 
+export type ArchitectureLevel = "beginner" | "intermediate" | "expert";
+
+export interface ArchitectureExplanationResponse {
+  repo_id: string;
+  level: ArchitectureLevel;
+  title: string;
+  markdown_content: string;
+  updated_at: string;
+}
+
+export interface JourneyStep {
+  step_number: number;
+  title: string;
+  file_path: string;
+  symbol_name?: string | null;
+  start_line: number;
+  end_line: number;
+  explanation: string;
+  outgoing_target?: string | null;
+}
+
+export interface JourneyResponse {
+  repo_id: string;
+  topic: string;
+  summary: string;
+  steps: JourneyStep[];
+}
+
+export interface SuggestedJourneyItem {
+  topic: string;
+  description: string;
+  category: string;
+}
+
+export interface SuggestedJourneysResponse {
+  repo_id: string;
+  journeys: SuggestedJourneyItem[];
+}
+
+

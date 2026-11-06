@@ -1,11 +1,15 @@
 import {
+  ArchitectureExplanationResponse,
+  ArchitectureLevel,
   FileContentResponse,
   GeminiKeyResponse,
   GeminiSettingsResponse,
   GraphData,
   HealthResponse,
+  JourneyResponse,
   OnboardingDocResponse,
   RepoIngestResponse,
+  SuggestedJourneysResponse,
 } from "@/types";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
@@ -92,4 +96,39 @@ export async function getGeminiSettings(): Promise<GeminiSettingsResponse> {
   if (!res.ok) throw new Error("Failed to fetch Gemini settings");
   return res.json();
 }
+
+export async function getArchitectureExplanation(
+  repoId: string,
+  level: ArchitectureLevel = "intermediate"
+): Promise<ArchitectureExplanationResponse> {
+  const params = new URLSearchParams({ level });
+  const res = await fetch(`${API_BASE}/api/repos/${repoId}/explanation?${params}`);
+  if (!res.ok) throw new Error("Failed to generate architecture explanation");
+  return res.json();
+}
+
+export async function getSuggestedJourneys(
+  repoId: string
+): Promise<SuggestedJourneysResponse> {
+  const res = await fetch(`${API_BASE}/api/repos/${repoId}/journeys`);
+  if (!res.ok) throw new Error("Failed to fetch suggested journeys");
+  return res.json();
+}
+
+export async function generateJourney(
+  repoId: string,
+  topic: string
+): Promise<JourneyResponse> {
+  const res = await fetch(`${API_BASE}/api/repos/${repoId}/journey`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ topic }),
+  });
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({ detail: "Failed to generate journey" }));
+    throw new Error(errorData.detail || "Failed to generate code journey");
+  }
+  return res.json();
+}
+
 

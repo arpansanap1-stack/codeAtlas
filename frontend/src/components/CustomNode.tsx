@@ -11,6 +11,7 @@ export interface CustomNodeData extends Record<string, unknown> {
   out_degree: number;
   summary?: string;
   isDimmed?: boolean;
+  journeyStepNumber?: number;
 }
 
 function getNodeCategoryStyle(filePath: string, folder: string) {
@@ -107,6 +108,13 @@ export const CustomNode = memo(function CustomNode({
         data.isDimmed && "opacity-25 grayscale"
       )}
     >
+      {/* Journey Step Number Badge */}
+      {typeof data.journeyStepNumber === "number" && (
+        <div className="absolute -top-2.5 -right-2.5 px-2 py-0.5 rounded-full bg-sky-500 text-zinc-950 font-bold font-mono text-[10px] shadow-lg shadow-sky-500/30 flex items-center gap-1 z-10 animate-bounce">
+          <span>Step {data.journeyStepNumber}</span>
+        </div>
+      )}
+
       {/* Input Handle (Left or Top) */}
       <Handle
         type="target"

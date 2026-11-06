@@ -17,6 +17,8 @@
 | **Update Gemini embeddings or vector search** | [`backend/app/services/embedding_service.py`](file:///c:/Users/arpan/codeAtlas/backend/app/services/embedding_service.py)<br>[`backend/app/db/supabase.py`](file:///c:/Users/arpan/codeAtlas/backend/app/db/supabase.py) | `EmbeddingService.process_and_index_chunks`, `search_similar_chunks`, RRF |
 | **Tune RAG chat prompt, citations, or SSE stream** | [`backend/app/services/chat_service.py`](file:///c:/Users/arpan/codeAtlas/backend/app/services/chat_service.py) | `ChatService.stream_chat_response`, `expand_graph_context` |
 | **Update Onboarding markdown synthesis or Mermaid** | [`backend/app/services/onboarding_service.py`](file:///c:/Users/arpan/codeAtlas/backend/app/services/onboarding_service.py)<br>[`frontend/src/components/OnboardingView.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/OnboardingView.tsx) | `generate_onboarding_documentation`, `MermaidRenderer` |
+| **Multi-level Architecture Explanation (Beginner/Inter/Expert)** | [`backend/app/services/explanation_service.py`](file:///c:/Users/arpan/codeAtlas/backend/app/services/explanation_service.py)<br>[`frontend/src/components/ArchitectureExplanationModal.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/ArchitectureExplanationModal.tsx) | `ExplanationService.explain_architecture`, `ArchitectureExplanationModal` |
+| **"Journey Through the Codebase" Guided Interactive Tours** | [`backend/app/services/journey_service.py`](file:///c:/Users/arpan/codeAtlas/backend/app/services/journey_service.py)<br>[`frontend/src/components/JourneyPlayer.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/JourneyPlayer.tsx) | `JourneyService.generate_journey`, `JourneyPlayer`, step highlighting |
 | **Modify React Flow canvas, node physics, or layout** | [`frontend/src/components/ArchitectureMap.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/ArchitectureMap.tsx)<br>[`frontend/src/components/CustomNode.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/CustomNode.tsx) | `ArchitectureMap`, Dagre layout engine, custom node styling |
 | **Change Monaco editor code viewer / line highlight** | [`frontend/src/components/CodeDrawer.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/CodeDrawer.tsx) | `CodeDrawer`, Monaco `deltaDecorations`, `revealLineInCenter` |
 | **Update Chat drawer UI or citation button handling** | [`frontend/src/components/ChatPanel.tsx`](file:///c:/Users/arpan/codeAtlas/frontend/src/components/ChatPanel.tsx) | `ChatPanel`, SSE reader, citation regex parser |
@@ -42,8 +44,10 @@ codeAtlas/
 │   │       ├── ast_service.py        # Tree-sitter & Python AST chunker
 │   │       ├── chat_service.py       # SSE streaming RAG Q&A engine
 │   │       ├── embedding_service.py  # Gemini text-embedding-004 embedder
+│   │       ├── explanation_service.py# Multi-level architecture explanation synthesizer
 │   │       ├── git_service.py        # Shallow clone, filter, tree generator
 │   │       ├── graph_service.py      # Import resolver & React Flow graph builder
+│   │       ├── journey_service.py    # Guided interactive execution pathfinder
 │   │       └── onboarding_service.py # ONBOARDING.md doc generator
 │   ├── tests/                # Pytest unit & integration test suite
 │   ├── requirements.txt      # Backend Python dependencies
@@ -57,13 +61,15 @@ codeAtlas/
 │   │   │   ├── layout.tsx            # Root layout with Inter font
 │   │   │   └── globals.css           # Tailwind base styles
 │   │   ├── components/
+│   │   │   ├── ArchitectureExplanationModal.tsx # Multi-level architecture modal
 │   │   │   ├── ArchitectureMap.tsx   # React Flow canvas + Dagre auto-layout
-│   │   │   ├── CustomNode.tsx        # Styled node with category badges & degree count
 │   │   │   ├── ChatPanel.tsx         # SSE streaming chat with citation pills
 │   │   │   ├── CodeDrawer.tsx        # Monaco editor slide-over with line highlights
-│   │   │   ├── OnboardingView.tsx    # Onboarding documentation renderer & export
+│   │   │   ├── CustomNode.tsx        # Styled node with category badges & degree count
+│   │   │   ├── GeminiKeyModal.tsx    # API key setup modal
+│   │   │   ├── JourneyPlayer.tsx     # Step-by-step interactive journey controller
 │   │   │   ├── MermaidRenderer.tsx   # Live Mermaid SVG renderer
-│   │   │   └── GeminiKeyModal.tsx    # API key setup modal
+│   │   │   └── OnboardingView.tsx    # Onboarding documentation renderer & export
 │   │   ├── lib/
 │   │   │   ├── api.ts                # Strongly-typed fetch API client
 │   │   │   └── utils.ts              # Tailwind clsx + twMerge utility
@@ -106,6 +112,9 @@ Understanding this prevents having to inspect multiple frontend files:
 | `GET` | `/api/repos/{repo_id}/file` | Raw file text for Monaco viewer | `path` / `FileContentResponse` |
 | `POST` | `/api/repos/{repo_id}/chat` | SSE streaming RAG Q&A | `ChatRequest` / `text/event-stream` |
 | `GET/POST`| `/api/repos/{repo_id}/onboarding` | Synthesizes/retrieves `ONBOARDING.md` | `-` / `OnboardingDocResponse` |
+| `GET` | `/api/repos/{repo_id}/explanation` | Generates multi-level architecture explanation | `level` / `ArchitectureExplanationResponse` |
+| `GET` | `/api/repos/{repo_id}/journeys` | Returns suggested interactive journeys | `-` / `SuggestedJourneysResponse` |
+| `POST` | `/api/repos/{repo_id}/journey` | Generates step-by-step code execution path | `JourneyRequest` / `JourneyResponse` |
 
 ---
 

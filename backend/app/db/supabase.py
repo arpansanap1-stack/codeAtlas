@@ -34,6 +34,8 @@ class DatabaseClient:
         self._memory_chunks: Dict[str, List[Dict[str, Any]]] = {}
         self._memory_files: Dict[str, Dict[str, str]] = {}  # repo_id -> {file_path: content}
         self._memory_onboarding: Dict[str, Dict[str, Any]] = {}
+        self._memory_explanations: Dict[str, Dict[str, Dict[str, Any]]] = {}  # repo_id -> {level: data}
+        self._memory_journeys: Dict[str, Dict[str, Dict[str, Any]]] = {}  # repo_id -> {topic: data}
 
         if (
             settings.SUPABASE_URL
@@ -411,6 +413,51 @@ class DatabaseClient:
                 logger.error(f"Error fetching onboarding doc from Supabase: {e}")
 
         return self._memory_onboarding.get(repo_id)
+
+    def save_architecture_explanation(
+        self, repo_id: str, level: str, title: str, markdown_content: str
+    ) -> Dict[str, Any]:
+        """Caches an architecture explanation by repo_id and level."""
+        record = {
+            "repo_id": repo_id,
+            "level": level,
+            "title": title,
+            "markdown_content": markdown_content,
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }
+        if repo_id not in self._memory_explanations:
+            self._memory_explanations[repo_id] = {}
+        self._memory_explanations[repo_id][level] = record
+        return record
+
+    def get_architecture_explanation(
+        self, repo_id: str, level: str
+    ) -> Optional[Dict[str, Any]]:
+        """Retrieves cached architecture explanation for a repository and level."""
+        return self._memory_explanations.get(repo_id, {}).get(level)
+
+    def save_journey(
+        self, repo_id: str, topic: str, summary: str, steps: List[Dict[str, Any]]
+    ) -> Dict[str, Any]:
+        """Caches an interactive code journey by repo_id and normalized topic."""
+        norm_topic = topic.strip().lower()
+        record = {
+            "repo_id": repo_id,
+            "topic": topic,
+            "summary": summary,
+            "steps": steps,
+            "updated_at": datetime.now(timezone.utc).isoformat(),
+        }
+        if repo_id not in self._memory_journeys:
+            self._memory_journeys[repo_id] = {}
+        self._memory_journeys[repo_id][norm_topic] = record
+        return record
+
+    def get_journey(self, repo_id: str, topic: str) -> Optional[Dict[str, Any]]:
+        """Retrieves cached journey by repository and topic."""
+        norm_topic = topic.strip().lower()
+        return self._memory_journeys.get(repo_id, {}).get(norm_topic)
+
 
 
 _db_instance: Optional[DatabaseClient] = None

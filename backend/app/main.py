@@ -14,6 +14,7 @@ from google.genai import types
 from app.config import get_settings
 from app.db.supabase import get_db
 from app.models.schemas import (
+    ArchitectureExplanationResponse,
     ChatRequest,
     CodeChunk,
     FileContentResponse,
@@ -22,18 +23,23 @@ from app.models.schemas import (
     GeminiSettingsResponse,
     GraphData,
     HealthResponse,
+    JourneyRequest,
+    JourneyResponse,
     OnboardingDocResponse,
     RepoChunksResponse,
     RepoGraphResponse,
     RepoIngestRequest,
     RepoIngestResponse,
     RepoStatus,
+    SuggestedJourneysResponse,
 )
 from app.services.ast_service import get_ast_service
 from app.services.chat_service import get_chat_service
 from app.services.embedding_service import get_embedding_service
+from app.services.explanation_service import get_explanation_service
 from app.services.git_service import get_git_service
 from app.services.graph_service import get_graph_service
+from app.services.journey_service import get_journey_service
 from app.services.onboarding_service import get_onboarding_service
 
 # Configure structured logging
@@ -403,3 +409,76 @@ def get_onboarding_docs(repo_id: str):
         markdown_content=doc_record["markdown_content"],
         updated_at=datetime.fromisoformat(doc_record["updated_at"]),
     )
+
+
+@app.get(
+    "/api/repos/{repo_id}/explanation",
+    response_model=ArchitectureExplanationResponse,
+    tags=["Architecture Explanation"],
+)
+def get_architecture_explanation(
+    repo_id: str,
+    level: str = Query(
+        "intermediate",
+        pattern="^(beginner|intermediate|expert)$",
+        description="Target audience depth: beginner, intermediate, or expert",
+    ),
+):
+    """
+    Generates a structured, multi-level architectural explanation of the codebase
+    with clickable code citations, core modules, entry points, and data flow.
+    """
+    db = get_db()
+    repo = db.get_repository(repo_id)
+    if not repo:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Repository '{repo_id}' not found.",
+        )
+
+    explanation_service = get_explanation_service()
+    return explanation_service.explain_architecture(repo_id=repo_id, level=level)
+
+
+@app.get(
+    "/api/repos/{repo_id}/journeys",
+    response_model=SuggestedJourneysResponse,
+    tags=["Codebase Journey"],
+)
+def get_suggested_journeys(repo_id: str):
+    """
+    Returns suggested interactive code execution paths tailored to the repository.
+    """
+    db = get_db()
+    repo = db.get_repository(repo_id)
+    if not repo:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Repository '{repo_id}' not found.",
+        )
+
+    journey_service = get_journey_service()
+    return journey_service.get_suggested_journeys(repo_id=repo_id)
+
+
+@app.post(
+    "/api/repos/{repo_id}/journey",
+    response_model=JourneyResponse,
+    tags=["Codebase Journey"],
+)
+def generate_codebase_journey(repo_id: str, payload: JourneyRequest):
+    """
+    Generates an interactive step-by-step code journey through the repository
+    (e.g. UI -> Route -> Service -> Database) with clickable citations and step explanations.
+    """
+    db = get_db()
+    repo = db.get_repository(repo_id)
+    if not repo:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Repository '{repo_id}' not found.",
+        )
+
+    journey_service = get_journey_service()
+    return journey_service.generate_journey(repo_id=repo_id, topic=payload.topic)
+

@@ -12,14 +12,18 @@ import {
   PanelRightOpen,
   Loader2,
   ExternalLink,
+  Sparkles,
+  Route,
 } from "lucide-react";
 import { ArchitectureMap } from "@/components/ArchitectureMap";
 import { OnboardingView } from "@/components/OnboardingView";
 import { ChatPanel } from "@/components/ChatPanel";
 import { CodeDrawer } from "@/components/CodeDrawer";
+import { ArchitectureExplanationModal } from "@/components/ArchitectureExplanationModal";
+import { JourneyPlayer } from "@/components/JourneyPlayer";
 import GeminiKeyModal from "@/components/GeminiKeyModal";
 import { getRepository, getRepositoryGraph } from "@/lib/api";
-import { GraphData, RepoIngestResponse } from "@/types";
+import { GraphData, JourneyResponse, RepoIngestResponse } from "@/types";
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -40,6 +44,12 @@ export default function RepoWorkspace({ params }: PageProps) {
   // Inspector & Citation state
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [targetLineRange, setTargetLineRange] = useState<[number, number] | null>(null);
+
+  // New Features: Architecture Explanation & Codebase Journey State
+  const [isExplainModalOpen, setIsExplainModalOpen] = useState(false);
+  const [isJourneyPlayerOpen, setIsJourneyPlayerOpen] = useState(false);
+  const [activeJourney, setActiveJourney] = useState<JourneyResponse | null>(null);
+  const [currentJourneyStepIndex, setCurrentJourneyStepIndex] = useState(0);
 
   useEffect(() => {
     let isMounted = true;
@@ -127,30 +137,61 @@ export default function RepoWorkspace({ params }: PageProps) {
           </div>
         </div>
 
-        {/* Center: Stage Switcher Tabs */}
-        <div className="flex items-center gap-1 bg-zinc-900/90 p-1 rounded-lg border border-zinc-800 text-xs font-mono">
+        {/* Center: Stage Switcher Tabs & Feature Triggers */}
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 bg-zinc-900/90 p-1 rounded-lg border border-zinc-800 text-xs font-mono">
+            <button
+              onClick={() => setActiveTab("map")}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-md transition-all ${
+                activeTab === "map"
+                  ? "bg-zinc-800 text-sky-400 shadow-sm"
+                  : "text-zinc-400 hover:text-zinc-200"
+              }`}
+            >
+              <Network className="w-3.5 h-3.5" />
+              <span>Architecture Map</span>
+            </button>
+
+            <button
+              onClick={() => setActiveTab("docs")}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-md transition-all ${
+                activeTab === "docs"
+                  ? "bg-zinc-800 text-sky-400 shadow-sm"
+                  : "text-zinc-400 hover:text-zinc-200"
+              }`}
+            >
+              <BookOpen className="w-3.5 h-3.5" />
+              <span>Onboarding Guide</span>
+            </button>
+          </div>
+
+          {/* AI Architecture Explanation Button */}
           <button
-            onClick={() => setActiveTab("map")}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-md transition-all ${
-              activeTab === "map"
-                ? "bg-zinc-800 text-sky-400 shadow-sm"
-                : "text-zinc-400 hover:text-zinc-200"
-            }`}
+            onClick={() => setIsExplainModalOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-900/90 hover:bg-zinc-850 border border-zinc-800 text-xs font-mono text-zinc-300 hover:text-white transition-all shadow-sm group"
+            title="Explain this architecture to me (Beginner / Intermediate / Expert)"
           >
-            <Network className="w-3.5 h-3.5" />
-            <span>Architecture Map</span>
+            <Sparkles className="w-3.5 h-3.5 text-sky-400 group-hover:scale-110 transition-transform" />
+            <span className="hidden sm:inline">Explain Architecture</span>
           </button>
 
+          {/* Interactive Codebase Journeys Button */}
           <button
-            onClick={() => setActiveTab("docs")}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-md transition-all ${
-              activeTab === "docs"
-                ? "bg-zinc-800 text-sky-400 shadow-sm"
-                : "text-zinc-400 hover:text-zinc-200"
+            onClick={() => {
+              setActiveTab("map");
+              setIsJourneyPlayerOpen(true);
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-mono transition-all shadow-sm group ${
+              activeJourney
+                ? "bg-sky-500/15 border-sky-500/40 text-sky-400 font-semibold"
+                : "bg-zinc-900/90 hover:bg-zinc-850 border-zinc-800 text-zinc-300 hover:text-white"
             }`}
+            title="Journey through the codebase (Step-by-step interactive flows)"
           >
-            <BookOpen className="w-3.5 h-3.5" />
-            <span>Onboarding Guide</span>
+            <Route className="w-3.5 h-3.5 text-emerald-400 group-hover:scale-110 transition-transform" />
+            <span className="hidden sm:inline">
+              {activeJourney ? "Active Journey" : "Code Journeys"}
+            </span>
           </button>
         </div>
 
@@ -184,6 +225,8 @@ export default function RepoWorkspace({ params }: PageProps) {
               graphData={graphData}
               onSelectFile={handleSelectNode}
               selectedFile={selectedFile}
+              activeJourneySteps={activeJourney?.steps}
+              currentJourneyStepIndex={currentJourneyStepIndex}
             />
           ) : (
             <OnboardingView
@@ -192,6 +235,19 @@ export default function RepoWorkspace({ params }: PageProps) {
               onSelectCitation={handleSelectCitation}
             />
           )}
+
+          {/* Interactive Code Journey Player / Dock */}
+          <JourneyPlayer
+            repoId={repoId}
+            repoName={repo.repo_name}
+            isOpen={isJourneyPlayerOpen}
+            onClose={() => setIsJourneyPlayerOpen(false)}
+            activeJourney={activeJourney}
+            setActiveJourney={setActiveJourney}
+            currentStepIndex={currentJourneyStepIndex}
+            setCurrentStepIndex={setCurrentJourneyStepIndex}
+            onSelectStepCitation={handleSelectCitation}
+          />
         </div>
 
         {/* Right Persistent Panel (Chat) */}
@@ -223,6 +279,15 @@ export default function RepoWorkspace({ params }: PageProps) {
           />
         )}
       </div>
+
+      {/* AI Architecture Explanation Modal */}
+      <ArchitectureExplanationModal
+        isOpen={isExplainModalOpen}
+        onClose={() => setIsExplainModalOpen(false)}
+        repoId={repoId}
+        repoName={repo.repo_name}
+        onSelectCitation={handleSelectCitation}
+      />
     </div>
   );
 }
