@@ -113,6 +113,14 @@ class GraphService:
         if import_path.startswith("@/"):
             normalized_rel = import_path[2:]
             candidates = [normalized_rel] + [f"{normalized_rel}{ext}" for ext in JS_EXTENSIONS]
+            
+            # Determine if source file lives inside a monorepo subfolder (e.g. frontend/src/...)
+            subproject_prefix = ""
+            if "/src/" in source_rel_path:
+                subproject_prefix = source_rel_path.split("/src/")[0]
+            elif "/" in source_rel_path:
+                subproject_prefix = source_rel_path.split("/")[0]
+
             for c in candidates:
                 posix_c = Path(c).as_posix()
                 if posix_c in valid_paths_set:
@@ -120,6 +128,23 @@ class GraphService:
                 src_c = f"src/{posix_c}"
                 if src_c in valid_paths_set:
                     return src_c
+                
+                # Check with monorepo subproject prefix
+                if subproject_prefix:
+                    sub_src = f"{subproject_prefix}/src/{posix_c}"
+                    if sub_src in valid_paths_set:
+                        return sub_src
+                    sub_direct = f"{subproject_prefix}/{posix_c}"
+                    if sub_direct in valid_paths_set:
+                        return sub_direct
+
+            # Final suffix check for any custom project structure
+            for c in candidates:
+                posix_c = Path(c).as_posix()
+                for vp in valid_paths_set:
+                    if vp.endswith(f"/src/{posix_c}") or vp.endswith(f"/{posix_c}"):
+                        return vp
+
             return None
 
         resolved = (source_dir / import_path).as_posix()

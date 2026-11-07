@@ -271,6 +271,45 @@ Every new feature implemented in this codebase must be logged here following the
 - **Notes / Breaking Changes:**
   Adds GET `/api/repos/{repo_id}/health-report` and adds Download/Copy controls to `HealthDashboardModal.tsx`.
 
+### [FEAT-012] Architectural Health Remediation & Full Codebase Clean-Up
+- **Status:** [COMPLETED]
+- **Created Date:** 2026-11-07
+- **Target Modules:**
+  - `backend/app/routers/` (`system.py`, `repos.py`, `chat.py`, `intelligence.py`, `health.py`)
+  - `backend/app/main.py` (decomposed God monolith from 624 LOC down to 88 LOC)
+  - `backend/app/db/supabase.py` & `backend/app/db/memory_store.py` (extracted in-memory store and vector math)
+  - `backend/app/models/schemas.py` & submodules (`models/common.py`, `models/repo.py`, `models/intelligence.py`, `models/health.py`)
+  - `backend/app/services/graph_service.py` (fixed monorepo `@/` path alias resolution for Next.js)
+  - `backend/app/services/health_service.py` (extracted `health_graph_utils.py` and `health_report_generator.py`)
+  - `backend/app/services/explanation_service.py` (extracted `explanation_templates.py`)
+  - `backend/app/services/debugger_service.py` (extracted `trace_parser.py` and `debug_heuristics.py`)
+  - `backend/app/services/journey_service.py` (extracted `journey_suggestions.py` and `journey_pathfinder.py`)
+  - `frontend/src/app/repo/[id]/page.tsx` & `frontend/src/components/workspace/` (`WorkspaceHeader.tsx`, `WorkspaceSidebar.tsx`, `WorkspaceModals.tsx`)
+  - `frontend/src/components/HealthDashboardModal.tsx` & `frontend/src/components/health/` (`SmellCard.tsx`, `DiagnosticReportTab.tsx`, `HealthScoreCards.tsx`, `HealthMetricsTab.tsx`, `HealthCyclesTab.tsx`, `HealthTabsBar.tsx`)
+  - `frontend/src/components/CommandPalette.tsx` & `frontend/src/components/command/defaultCommands.ts`
+  - `frontend/src/components/JourneyPlayer.tsx` & `frontend/src/components/journey/JourneyStepHud.tsx`
+  - `frontend/src/components/GitHistoryModal.tsx` & `frontend/src/components/history/` (`GitHistoryContributors.tsx`, `GitHistoryTimeline.tsx`)
+  - `frontend/src/components/ChatPanel.tsx` & `frontend/src/components/chat/` (`ChatMessageItem.tsx`, `PinnedContextBar.tsx`, `citationUtils.tsx`)
+  - `frontend/src/components/ExportSnapshotModal.tsx` & `frontend/src/lib/exportUtils.ts`
+  - `frontend/src/components/RepoOverviewView.tsx` & `frontend/src/components/overview/` (`OverviewMetricCard.tsx`, `QuickActionsGrid.tsx`)
+  - `frontend/src/components/ArchitectureMap.tsx` & `frontend/src/components/map/` (`MapControlsBar.tsx`, `mapLayoutUtils.ts`)
+- **Description & User Value:**
+  Systematic architectural remediation across the entire CodeAtlas codebase addressing all smells detected in the audit report:
+  1. Decomposes God file `backend/app/main.py` into specialized FastAPI APIRouters (`routers/repos.py`, `routers/chat.py`, `routers/intelligence.py`, `routers/health.py`, `routers/system.py`).
+  2. Decomposes God file `backend/app/db/supabase.py` by extracting in-memory fallback storage into `backend/app/db/memory_store.py`.
+  3. Modularizes monolithic `backend/app/models/schemas.py` into domain schemas while preserving 100% backward-compatible re-exports.
+  4. Fixes Next.js `@/` path alias import resolution in `GraphService` for subfolder projects, reconnecting all frontend components in the dependency graph.
+  5. Refines `HealthService` dead module detection to exclude non-code documentation, configurations, and assets.
+  6. Decomposes oversized services (`health_service.py`, `explanation_service.py`, `debugger_service.py`, `journey_service.py`) into cohesive modules.
+  7. Refactors all oversized frontend components (>350 LOC) including `page.tsx`, `HealthDashboardModal.tsx`, `CommandPalette.tsx`, `JourneyPlayer.tsx`, `GitHistoryModal.tsx`, `ChatPanel.tsx`, `ExportSnapshotModal.tsx`, `RepoOverviewView.tsx`, and `ArchitectureMap.tsx` into clean, single-responsibility subcomponents.
+  8. Zero files across both `backend/app` and `frontend/src` now exceed 350 LOC.
+- **Verification Commands:**
+  - Backend: `backend\.venv\Scripts\pytest backend/tests/test_api_ingest.py backend/tests/test_health_service.py backend/tests/test_explanation_service.py backend/tests/test_journey_service.py backend/tests/test_debugger_service.py backend/tests/test_impact_service.py backend/tests/test_git_history_service.py backend/tests/test_onboarding_service.py backend/tests/test_gemini_settings.py -v` (19/19 PASSED)
+  - Frontend: `frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit` (0 errors)
+- **Git Commit:** `5ba63f9`
+- **Notes / Breaking Changes:**
+  Zero breaking changes. Preserves all REST endpoints, SSE streams, WebSocket/API payloads, and React Flow graph interactions.
+
 ### 📝 Feature Template (Copy & Paste for New Features)
 ```markdown
 ### [FEAT-XXX] Feature Title
@@ -305,6 +344,7 @@ Every new feature implemented in this codebase must be logged here following the
 
 | Commit | Date | Tag | Summary |
 | :--- | :--- | :--- | :--- |
+| `5ba63f9` | 2026-11-07 | - | refactor: decompose god modules and oversized components to elevate architecture health |
 | `adfdc89` | 2026-11-07 | - | feat: add architecture health and smell diagnostic report download engine |
 | `b6bd899` | 2026-11-06 | - | docs: comprehensive README overhaul with new intelligence features and command palette |
 | `0096ccf` | 2026-11-06 | - | feat: implement Git History Intelligence, Chat With Selected Code, and Architecture Snapshots |

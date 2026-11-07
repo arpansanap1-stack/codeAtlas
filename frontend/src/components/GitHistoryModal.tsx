@@ -4,21 +4,16 @@ import React, { useEffect, useState } from "react";
 import {
   History,
   X,
-  Users,
-  Flame,
-  GitCommit,
-  GitFork,
   FileCode,
-  Calendar,
-  ExternalLink,
   Loader2,
   TrendingUp,
   AlertCircle,
-  Eye,
   MessageSquareCode,
 } from "lucide-react";
 import { getFileGitHistory } from "@/lib/api";
 import { FileGitIntelligenceResponse } from "@/types";
+import { GitHistoryContributors } from "@/components/history/GitHistoryContributors";
+import { GitHistoryTimeline } from "@/components/history/GitHistoryTimeline";
 
 interface GitHistoryModalProps {
   isOpen: boolean;
@@ -212,142 +207,15 @@ export function GitHistoryModal({
             </div>
 
             {/* Top Contributors & Co-Changed Modules (2 Column Grid) */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {/* Who Changed It Most? */}
-              <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/40 flex flex-col">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 font-mono mb-2 flex items-center justify-between">
-                  <span className="flex items-center gap-1.5">
-                    <Users className="w-4 h-4 text-sky-400" />
-                    <span>Who Changed It Most?</span>
-                  </span>
-                  <span className="text-[10px] text-zinc-500">by commit volume</span>
-                </h3>
-
-                <div className="space-y-2.5 mt-2 flex-1">
-                  {data.contributors.length === 0 ? (
-                    <div className="text-xs font-mono text-zinc-500">No contributor records found.</div>
-                  ) : (
-                    data.contributors.map((c, idx) => (
-                      <div
-                        key={idx}
-                        className="p-2.5 rounded-lg bg-zinc-900/90 border border-zinc-800 flex items-center justify-between gap-3 text-xs font-mono"
-                      >
-                        <div className="min-w-0">
-                          <div className="font-medium text-zinc-200 truncate">{c.name}</div>
-                          <div className="text-[10px] text-zinc-500 truncate">{c.email}</div>
-                        </div>
-
-                        <div className="text-right shrink-0">
-                          <div className="text-sky-400 font-semibold">{c.percentage}%</div>
-                          <div className="text-[10px] text-zinc-400">
-                            {c.commits_count} commit{c.commits_count > 1 ? "s" : ""}
-                          </div>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-
-              {/* Which Files Usually Change Together? (Temporal Coupling) */}
-              <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/40 flex flex-col">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 font-mono mb-2 flex items-center justify-between">
-                  <span className="flex items-center gap-1.5">
-                    <GitFork className="w-4 h-4 text-amber-400" />
-                    <span>Which Files Usually Change Together?</span>
-                  </span>
-                  <span className="text-[10px] text-zinc-500">temporal coupling</span>
-                </h3>
-
-                <div className="space-y-2 mt-2 flex-1">
-                  {data.co_changed_files.length === 0 ? (
-                    <div className="text-xs font-mono text-zinc-500">
-                      This file evolves independently with no co-modification partners.
-                    </div>
-                  ) : (
-                    data.co_changed_files.map((cf, idx) => (
-                      <div
-                        key={idx}
-                        className="p-2 rounded-lg bg-zinc-900/90 border border-zinc-800 hover:border-zinc-700 flex items-center justify-between gap-3 text-xs font-mono group"
-                      >
-                        <button
-                          onClick={() => onChangeTargetFile(cf.file_path)}
-                          className="text-amber-300 hover:text-amber-200 truncate text-left font-medium"
-                          title={`Switch to ${cf.file_path}`}
-                        >
-                          {cf.file_path}
-                        </button>
-
-                        <div className="flex items-center gap-2 shrink-0">
-                          <span
-                            className="px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 text-[10px]"
-                            title="Co-change coupling strength (0.0 to 1.0)"
-                          >
-                            {(cf.coupling_strength * 100).toFixed(0)}% co-changed
-                          </span>
-                          <button
-                            onClick={() => {
-                              onSelectFile(cf.file_path);
-                              onClose();
-                            }}
-                            className="p-1 rounded hover:bg-zinc-800 text-zinc-400 hover:text-white"
-                            title="Inspect Code"
-                          >
-                            <Eye className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </div>
-              </div>
-            </div>
+            <GitHistoryContributors
+              data={data}
+              onChangeTargetFile={onChangeTargetFile}
+              onSelectFile={onSelectFile}
+              onClose={onClose}
+            />
 
             {/* Code Evolution Timeline */}
-            <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-900/40">
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 font-mono mb-3 flex items-center gap-1.5">
-                <GitCommit className="w-4 h-4 text-emerald-400" />
-                <span>Code Evolution Timeline ({data.recent_commits.length} recorded events)</span>
-              </h3>
-
-              <div className="space-y-3 relative before:absolute before:inset-0 before:left-3.5 before:w-0.5 before:bg-zinc-800">
-                {data.recent_commits.map((commit, idx) => (
-                  <div key={idx} className="relative flex items-start gap-4 pl-8 group">
-                    <div className="absolute left-2 top-2 w-3.5 h-3.5 rounded-full border-2 border-zinc-800 bg-zinc-950 group-hover:border-sky-400 transition-colors shrink-0" />
-
-                    <div className="flex-1 p-3 rounded-lg bg-zinc-900/90 border border-zinc-800/80 hover:border-zinc-700 transition-all text-xs font-mono">
-                      <div className="flex items-center justify-between gap-3 text-zinc-400 text-[11px] mb-1">
-                        <span className="font-semibold text-zinc-200">{commit.author_name}</span>
-                        <div className="flex items-center gap-2 text-zinc-500">
-                          <span className="flex items-center gap-1">
-                            <Calendar className="w-3 h-3" />
-                            {commit.date}
-                          </span>
-                          <span className="px-1.5 py-0.2 rounded bg-zinc-800 text-sky-400 text-[10px]">
-                            {commit.commit_hash}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="text-zinc-200 font-sans text-xs mt-1 leading-snug">
-                        {commit.message}
-                      </div>
-
-                      {(commit.insertions > 0 || commit.deletions > 0) && (
-                        <div className="flex items-center gap-2 mt-2 pt-1.5 border-t border-zinc-800/60 text-[10px] font-mono">
-                          {commit.insertions > 0 && (
-                            <span className="text-emerald-400 font-semibold">+{commit.insertions}</span>
-                          )}
-                          {commit.deletions > 0 && (
-                            <span className="text-rose-400 font-semibold">-{commit.deletions}</span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <GitHistoryTimeline commits={data.recent_commits} />
           </div>
         ) : null}
       </div>
