@@ -338,6 +338,15 @@ class CodebaseHealthResponse(BaseModel):
     summary: str
 
 
+class CodebaseHealthReportResponse(BaseModel):
+    repo_id: str
+    repo_name: str
+    health_score: int
+    health_rating: str
+    markdown_report: str
+    generated_at: datetime
+
+
 class FileContributor(BaseModel):
     name: str
     email: str

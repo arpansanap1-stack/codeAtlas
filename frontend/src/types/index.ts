@@ -210,6 +210,15 @@ export interface CodebaseHealthResponse {
   summary: string;
 }
 
+export interface CodebaseHealthReportResponse {
+  repo_id: string;
+  repo_name: string;
+  health_score: number;
+  health_rating: string;
+  markdown_report: string;
+  generated_at: string;
+}
+
 export interface FileContributor {
   name: string;
   email: string;

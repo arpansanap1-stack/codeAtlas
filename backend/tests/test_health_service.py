@@ -90,4 +90,28 @@ def test_health_metrics_api_endpoint():
     assert len(res.smells) > 0
 
 
+def test_health_markdown_report_generation_and_api():
+    from app.main import get_codebase_health_report
+
+    health_svc = get_health_service()
+    report_res = health_svc.generate_health_markdown_report("test-repo-health-1")
+
+    assert report_res.repo_id == "test-repo-health-1"
+    assert report_res.repo_name == "health-test"
+    assert report_res.health_score > 0
+    assert "Architecture Health & Codebase Quality Audit Report" in report_res.markdown_report
+    assert "1. Executive Summary" in report_res.markdown_report
+    assert "2. Scorecard & Vital Structural Metrics" in report_res.markdown_report
+    assert "3. In-Depth Problem Explanations" in report_res.markdown_report
+    assert "Why This Is a" in report_res.markdown_report
+    assert "Recommended Remediation" in report_res.markdown_report
+    assert "7. Prioritized Engineering Remediation Roadmap" in report_res.markdown_report
+
+    # Test the API endpoint
+    api_res = get_codebase_health_report("test-repo-health-1")
+    assert api_res.repo_id == "test-repo-health-1"
+    assert api_res.markdown_report == report_res.markdown_report
+
+
+
 

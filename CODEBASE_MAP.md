@@ -55,7 +55,7 @@ codeAtlas/
 │   │       ├── git_history_service.py# Commit churn, top authors, co-change coupling & evolution
 │   │       ├── git_service.py        # Shallow clone, filter, tree generator
 │   │       ├── graph_service.py      # Import resolver & React Flow graph builder
-│   │       ├── health_service.py     # Codebase health score, cycle detection & architecture smells
+│   │       ├── health_service.py     # Codebase health score, cycle detection, architecture smells & diagnostic markdown report generator
 │   │       ├── impact_service.py     # Reverse-dependency blast radius analyzer
 │   │       ├── journey_service.py    # Guided interactive execution pathfinder
 │   │       └── onboarding_service.py # ONBOARDING.md doc generator
@@ -81,7 +81,7 @@ codeAtlas/
 │   │   │   ├── ExportSnapshotModal.tsx # SVG/PNG canvas export, Markdown doc download & Mermaid generator
 │   │   │   ├── GeminiKeyModal.tsx    # API key setup modal
 │   │   │   ├── GitHistoryModal.tsx   # Author churn, co-change coupling & evolution timeline modal
-│   │   │   ├── HealthDashboardModal.tsx # Codebase health dashboard & architecture smell modal
+│   │   │   ├── HealthDashboardModal.tsx # Codebase health dashboard, architecture smells & diagnostic report download/preview modal
 │   │   │   ├── ImpactModal.tsx       # 'What happens if I change this?' impact modal
 │   │   │   ├── JourneyPlayer.tsx     # Step-by-step interactive journey controller
 │   │   │   ├── MermaidRenderer.tsx   # Live Mermaid SVG renderer
@@ -135,6 +135,7 @@ Understanding this prevents having to inspect multiple frontend files:
 | `POST` | `/api/repos/{repo_id}/debug` | Diagnoses runtime errors and stack traces | `DebugRequest` / `DebugResponse` |
 | `GET` | `/api/repos/{repo_id}/impact` | Computes downstream blast radius & callers | `file_path` / `ImpactAnalysisResponse` |
 | `GET` | `/api/repos/{repo_id}/health-metrics` | Evaluates health score, language breakdown, module sizes & architectural smells | `-` / `CodebaseHealthResponse` |
+| `GET` | `/api/repos/{repo_id}/health-report` | Generates comprehensive diagnostic markdown health report with architectural problem explanations | `-` / `CodebaseHealthReportResponse` |
 
 ---
 

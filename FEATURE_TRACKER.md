@@ -251,6 +251,26 @@ Every new feature implemented in this codebase must be logged here following the
 - **Notes / Breaking Changes:**
   Zero backend modifications. Preserves all API contracts, SSE streaming, Monaco line decorations, and React Flow physics.
 
+### [FEAT-011] Codebase Health & Architecture Smell Diagnostic Report Download Engine
+- **Status:** [COMPLETED]
+- **Created Date:** 2026-11-07
+- **Target Modules:**
+  - `backend/app/models/schemas.py`
+  - `backend/app/services/health_service.py`
+  - `backend/app/main.py`
+  - `backend/tests/test_health_service.py`
+  - `frontend/src/types/index.ts`
+  - `frontend/src/lib/api.ts`
+  - `frontend/src/components/HealthDashboardModal.tsx`
+- **Description & User Value:**
+  Adds a comprehensive, professional architectural health report download capability directly inside the Health & Architecture Smell tab. Generates an in-depth markdown report detailing the codebase health score, rating, problem breakdown (explaining why circular dependencies, God files, oversized modules, dead modules, and tight coupling harm maintainability and cause regressions), exact affected file paths, circular cycle traces, component hotspots, and prioritized engineering remediation steps. Includes one-click `.md` file download, clipboard copy, and an in-modal report preview tab.
+- **Verification Commands:**
+  - Backend: `backend\.venv\Scripts\pytest backend/tests/test_health_service.py -v` (PASSED - 4/4 tests)
+  - Frontend: `frontend\node_modules\.bin\tsc.cmd -p frontend\tsconfig.json --noEmit` (0 errors)
+- **Git Commit:** Pending
+- **Notes / Breaking Changes:**
+  Adds GET `/api/repos/{repo_id}/health-report` and adds Download/Copy controls to `HealthDashboardModal.tsx`.
+
 ### 📝 Feature Template (Copy & Paste for New Features)
 ```markdown
 ### [FEAT-XXX] Feature Title
@@ -274,10 +294,10 @@ Every new feature implemented in this codebase must be logged here following the
 ## 📌 Implementation Queue
 
 ### Upcoming Candidate Features (Backlog)
-- [ ] **[FEAT-011] Multi-Branch & Tag Selector**: Ingest specific branches (`develop`, `staging`) or release tags instead of only the default branch.
-- [ ] **[FEAT-012] Language Filter on Architecture Canvas**: Filter nodes by language (e.g. show only Python files, or only TypeScript/TSX).
-- [ ] **[FEAT-013] Enhanced Call Graph Resolution**: Deepen AST analysis to detect function-to-function invocation edges across files.
-- [ ] **[FEAT-014] Chat History Persistence**: Store multi-turn chat sessions in PostgreSQL/LocalStorage for persistent repo exploration.
+- [ ] **[FEAT-012] Multi-Branch & Tag Selector**: Ingest specific branches (`develop`, `staging`) or release tags instead of only the default branch.
+- [ ] **[FEAT-013] Language Filter on Architecture Canvas**: Filter nodes by language (e.g. show only Python files, or only TypeScript/TSX).
+- [ ] **[FEAT-014] Enhanced Call Graph Resolution**: Deepen AST analysis to detect function-to-function invocation edges across files.
+- [ ] **[FEAT-015] Chat History Persistence**: Store multi-turn chat sessions in PostgreSQL/LocalStorage for persistent repo exploration.
 
 ---
 
